@@ -80,3 +80,83 @@ export async function createProject(formData: FormData) {
   revalidatePath('/projects');
   redirect(`/projects/${project.id}`);
 }
+
+// Update Proyek Riset Lengkap
+export async function updateProject(projectId: string, formData: FormData) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: 'Anda harus login untuk mengedit proyek.' };
+  }
+
+  const title = formData.get('title') as string;
+  const focusArea = formData.get('focusArea') as string;
+  const scheme = formData.get('scheme') as string;
+  const fiscalYear = parseInt(formData.get('fiscalYear') as string, 10) || new Date().getFullYear();
+  const startDate = formData.get('startDate') as string;
+  const endDate = formData.get('endDate') as string;
+  const totalBudget = parseFloat(formData.get('totalBudget') as string) || 0;
+  const status = (formData.get('status') as string) || 'draft';
+  const telegramGroupIdRaw = formData.get('telegramGroupId') as string;
+  const telegramGroupId =
+    telegramGroupIdRaw && telegramGroupIdRaw.trim() !== ''
+      ? parseInt(telegramGroupIdRaw.trim(), 10)
+      : null;
+
+  if (!title || !scheme || !startDate || !endDate) {
+    return { error: 'Judul riset, skema, dan tanggal mulai/selesai wajib diisi.' };
+  }
+
+  const { error } = await supabase
+    .from('projects')
+    .update({
+      title,
+      focus_area: focusArea || 'Sistem Informasi',
+      scheme,
+      fiscal_year: fiscalYear,
+      start_date: startDate,
+      end_date: endDate,
+      total_budget: totalBudget,
+      status,
+      telegram_group_id: telegramGroupId,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', projectId);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath('/projects');
+  revalidatePath(`/projects/${projectId}`);
+  return { success: true };
+}
+
+// Update Khusus Telegram Group ID
+export async function updateTelegramGroupId(projectId: string, telegramGroupIdRaw: string) {
+  const supabase = await createClient();
+
+  const telegramGroupId =
+    telegramGroupIdRaw && telegramGroupIdRaw.trim() !== ''
+      ? parseInt(telegramGroupIdRaw.trim(), 10)
+      : null;
+
+  const { error } = await supabase
+    .from('projects')
+    .update({
+      telegram_group_id: telegramGroupId,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', projectId);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath(`/projects/${projectId}`);
+  return { success: true };
+}

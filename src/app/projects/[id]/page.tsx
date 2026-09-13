@@ -164,6 +164,18 @@ export default async function ProjectDetailPage({
                 {project.start_date} s/d {project.end_date}
               </span>
             </div>
+            {isPI && (
+              <>
+                <div className="h-8 w-px bg-slate-200" />
+                <Link
+                  href={`/projects/${id}/edit`}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 shadow-2xs transition-colors"
+                >
+                  <FileText className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Edit Proyek</span>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
