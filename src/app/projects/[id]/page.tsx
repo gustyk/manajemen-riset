@@ -10,10 +10,7 @@ import {
   ArrowLeft,
   Users,
   Send,
-  CheckCircle,
   FileText,
-  Clock,
-  Sparkles,
 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -117,11 +114,11 @@ export default async function ProjectDetailPage({
     .order('created_at', { ascending: false });
 
   const schemeLabels: Record<string, string> = {
-    kemdikbud_bima: 'Hibah Kemdikbudristek (BIMA)',
-    brin: 'Hibah Riset BRIN',
-    internal_kampus: 'Hibah Internal Kampus',
-    matching_fund: 'Matching Fund Kedaireka',
-    industri: 'Kerja Sama Industri',
+    kemdikbud_bima: 'Kemdikbud BIMA',
+    brin: 'Hibah BRIN',
+    internal_kampus: 'Hibah Internal PT',
+    matching_fund: 'Kedaireka',
+    industri: 'Kemitraan Industri',
     mandiri: 'Penelitian Mandiri',
   };
 
@@ -137,64 +134,63 @@ export default async function ProjectDetailPage({
       {/* Back button */}
       <Link
         href="/projects"
-        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 mb-4 transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-zinc-950 mb-4 transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         <span>Kembali ke Daftar Proyek</span>
       </Link>
 
       {/* Project Header Banner */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs mb-8">
+      <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-2xs mb-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2.5 mb-2">
-              <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-zinc-100 text-zinc-800 border border-zinc-200">
                 {schemeLabels[project.scheme] || project.scheme}
               </span>
-              <span className="text-xs font-semibold text-slate-400">
+              <span className="text-xs font-mono font-semibold text-zinc-500">
                 TA {project.fiscal_year}
               </span>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">
-                Status: {project.status.toUpperCase()}
+              <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-200">
+                STATUS: {project.status}
               </span>
             </div>
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-lg sm:text-xl font-extrabold text-zinc-950 tracking-tight leading-snug">
               {project.title}
             </h1>
-            <p className="text-xs text-slate-500 mt-1">
-              Fokus: <span className="font-semibold text-slate-700">{project.focus_area}</span> • Ketua Peneliti:{' '}
-              <span className="font-semibold text-slate-700">
-                {project.created_by_profile?.full_name || 'Dosen Sistem Informasi'}
-              </span>
+            <p className="text-xs text-zinc-500 mt-1.5 flex items-center gap-2">
+              <span>Fokus: <strong className="text-zinc-800 font-semibold">{project.focus_area}</strong></span>
+              <span>•</span>
+              <span>Ketua Peneliti: <strong className="text-zinc-800 font-semibold">{project.created_by_profile?.full_name || 'Dosen SI'}</strong></span>
             </p>
           </div>
 
-          <div className="flex items-center gap-4 bg-slate-50 p-3.5 rounded-xl border border-slate-100 shrink-0">
+          <div className="flex items-center gap-4 bg-zinc-50 p-3.5 rounded-lg border border-zinc-200 shrink-0">
             <div className="text-right">
-              <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
+              <span className="text-[10px] uppercase font-bold text-zinc-500 block tracking-wider">
                 Alokasi Pagu
               </span>
-              <span className="text-base font-black text-slate-900">
+              <span className="text-base font-black text-zinc-950 font-mono">
                 Rp {Number(project.total_budget).toLocaleString('id-ID')}
               </span>
             </div>
-            <div className="h-8 w-px bg-slate-200" />
+            <div className="h-8 w-px bg-zinc-200" />
             <div>
-              <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
-                Periode Riset
+              <span className="text-[10px] uppercase font-bold text-zinc-500 block tracking-wider">
+                Periode Pelaksanaan
               </span>
-              <span className="text-xs font-semibold text-slate-700">
+              <span className="text-xs font-mono font-semibold text-zinc-800">
                 {project.start_date} s/d {project.end_date}
               </span>
             </div>
             {isPI && (
               <>
-                <div className="h-8 w-px bg-slate-200" />
+                <div className="h-8 w-px bg-zinc-200" />
                 <Link
                   href={`/projects/${id}/edit`}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 shadow-2xs transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-950 hover:bg-orange-600 text-white text-xs font-bold rounded-lg transition-colors shadow-2xs"
                 >
-                  <FileText className="w-3.5 h-3.5 text-indigo-600" />
+                  <FileText className="w-3.5 h-3.5" />
                   <span>Edit Proyek</span>
                 </Link>
               </>

@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Link from 'next/link';
-import { Receipt, Wallet, Calendar, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Receipt, ExternalLink } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,22 +35,28 @@ export default async function ExpensesPage() {
         telegramChatId: profile?.telegram_chat_id,
       }}
     >
-      <div className="border-b border-slate-200 pb-6 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="border-b border-zinc-200 pb-5 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-            Surat Pertanggungjawaban (SPJ) & Keuangan
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-2 h-2 rounded-full bg-orange-600"></span>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-500">
+              Pertanggungjawaban Keuangan (SPJ)
+            </span>
+          </div>
+          <h2 className="text-xl font-extrabold text-zinc-950 tracking-tight">
+            Rekapitulasi Belanja Riset Berbasis SBM
           </h2>
-          <p className="text-sm text-slate-500 mt-1">
-            Rekapitulasi seluruh realisasi belanja riset dengan bukti kuitansi terarsip aman di Cloudinary.
+          <p className="text-xs text-zinc-500 mt-1">
+            Arsip terpusat seluruh bukti kuitansi digital Cloudinary dan pemotongan pajak (PPh 21/23/PPN).
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs text-right">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
-              Total Realisasi
+          <div className="p-3 bg-white rounded-xl border border-zinc-200 shadow-2xs text-right">
+            <span className="text-[10px] uppercase font-bold text-zinc-500 block tracking-wider">
+              Total Realisasi Belanja
             </span>
-            <span className="text-base font-black text-slate-900">
+            <span className="text-base font-black text-zinc-950 font-mono">
               Rp {totalSpent.toLocaleString('id-ID')}
             </span>
           </div>
@@ -58,60 +64,62 @@ export default async function ExpensesPage() {
       </div>
 
       {!expenses || expenses.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center">
-          <Receipt className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-          <h3 className="text-sm font-bold text-slate-800">Belum Ada Catatan Belanja</h3>
-          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-            Setiap kuitansi yang dicatat pada workspace proyek akan otomatis terhimpun dan siap diekspor ke format SPJ.
+        <div className="bg-white rounded-xl border border-dashed border-zinc-300 p-12 text-center">
+          <div className="w-12 h-12 mx-auto rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-500 mb-3 border border-zinc-200">
+            <Receipt className="w-6 h-6" />
+          </div>
+          <h3 className="text-sm font-bold text-zinc-950">Belum Ada Catatan Belanja</h3>
+          <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto leading-relaxed">
+            Setiap kuitansi yang dicatat pada workspace proyek akan otomatis terhimpun dan siap dicetak ke Buku Kas Pembantu SPJ.
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+        <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-2xs">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider">
+            <thead className="bg-zinc-100 border-b border-zinc-200 text-zinc-700 font-bold uppercase tracking-wider text-[10px]">
               <tr>
-                <th className="px-5 py-3.5">Tanggal</th>
-                <th className="px-5 py-3.5">Proyek Riset</th>
-                <th className="px-5 py-3.5">Uraian Belanja</th>
-                <th className="px-5 py-3.5">Pajak</th>
-                <th className="px-5 py-3.5 text-right">Nominal Bruto</th>
-                <th className="px-5 py-3.5 text-center">Bukti Kuitansi</th>
+                <th className="px-4 py-3">Tanggal</th>
+                <th className="px-4 py-3">Proyek Riset</th>
+                <th className="px-4 py-3">Uraian Belanja</th>
+                <th className="px-4 py-3">Pajak</th>
+                <th className="px-4 py-3 text-right">Nominal Bruto</th>
+                <th className="px-4 py-3 text-center">Bukti Kuitansi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-zinc-100">
               {expenses.map((exp) => (
-                <tr key={exp.id} className="hover:bg-slate-50/60">
-                  <td className="px-5 py-3.5 text-slate-600 whitespace-nowrap">{exp.expense_date}</td>
-                  <td className="px-5 py-3.5 font-semibold text-slate-900 max-w-xs truncate">
+                <tr key={exp.id} className="hover:bg-zinc-50/70 transition-colors">
+                  <td className="px-4 py-3 font-mono text-zinc-600 whitespace-nowrap">{exp.expense_date}</td>
+                  <td className="px-4 py-3 font-semibold text-zinc-900 max-w-xs truncate">
                     <Link
                       href={`/projects/${exp.project_id}?tab=expenses`}
-                      className="hover:text-indigo-600 hover:underline"
+                      className="hover:text-orange-600 hover:underline"
                     >
                       {exp.projects?.title}
                     </Link>
                   </td>
-                  <td className="px-5 py-3.5 text-slate-700">{exp.description}</td>
-                  <td className="px-5 py-3.5">
-                    <span className="px-2 py-0.5 rounded bg-slate-100 font-semibold text-slate-700 uppercase text-[10px]">
+                  <td className="px-4 py-3 text-zinc-700">{exp.description}</td>
+                  <td className="px-4 py-3">
+                    <span className="px-2 py-0.5 rounded bg-zinc-100 font-mono font-bold text-zinc-800 uppercase text-[10px] border border-zinc-200">
                       {exp.tax_type}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5 text-right font-bold text-slate-900 whitespace-nowrap">
+                  <td className="px-4 py-3 text-right font-mono font-bold text-zinc-950 whitespace-nowrap">
                     Rp {Number(exp.gross_amount).toLocaleString('id-ID')}
                   </td>
-                  <td className="px-5 py-3.5 text-center whitespace-nowrap">
+                  <td className="px-4 py-3 text-center whitespace-nowrap">
                     {exp.receipt_cloudinary_url ? (
                       <a
                         href={exp.receipt_cloudinary_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:underline"
+                        className="inline-flex items-center gap-1 text-xs font-bold text-orange-600 hover:underline font-mono"
                       >
-                        <span>Lihat Nota</span>
+                        <span>Nota</span>
                         <ExternalLink className="w-3 h-3" />
                       </a>
                     ) : (
-                      <span className="text-slate-400">-</span>
+                      <span className="text-zinc-400 font-mono">-</span>
                     )}
                   </td>
                 </tr>

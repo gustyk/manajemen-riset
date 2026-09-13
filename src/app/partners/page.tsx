@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import PartnerListClient from './PartnerListClient';
-import { Users, Handshake, Building2 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,13 +31,19 @@ export default async function PartnersPage() {
         telegramChatId: profile?.telegram_chat_id,
       }}
     >
-      <div className="border-b border-slate-200 pb-6 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="border-b border-zinc-200 pb-5 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-            Mitra Kolaborasi Riset
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-2 h-2 rounded-full bg-orange-600"></span>
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-500">
+              Basis Data Kerja Sama Eksternal
+            </span>
+          </div>
+          <h2 className="text-xl font-extrabold text-zinc-950 tracking-tight">
+            Direktori Mitra Riset & Industri
           </h2>
-          <p className="text-sm text-slate-500 mt-1">
-            Kelola basis data mitra industri, instansi pemerintah, dan dokumen legal kerja sama (MoU/MoA).
+          <p className="text-xs text-zinc-500 mt-1">
+            Kelola data institusi mitra industri, BUMN/instansi pemerintah, dan legalitas dokumen kerja sama (MoU/MoA).
           </p>
         </div>
       </div>

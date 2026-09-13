@@ -10,10 +10,8 @@ import {
   Users,
   ArrowRight,
   TrendingUp,
-  CheckCircle,
-  Clock,
-  Sparkles,
   Send,
+  Sparkles,
 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -62,17 +60,17 @@ export default async function ProjectsPage() {
 
   const { data: projects } = await query.order('created_at', { ascending: false });
 
-  // Ambil statistik sederhana
+  // Ambil statistik
   const totalProjects = projects?.length || 0;
   const totalBudget = projects?.reduce((acc, p) => acc + (Number(p.total_budget) || 0), 0) || 0;
 
-  const schemeLabels: Record<string, { label: string; color: string }> = {
-    kemdikbud_bima: { label: 'Hibah Kemdikbud BIMA', color: 'bg-blue-50 text-blue-700 border-blue-200' },
-    brin: { label: 'Hibah BRIN', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-    internal_kampus: { label: 'Hibah Internal Perguruan Tinggi', color: 'bg-purple-50 text-purple-700 border-purple-200' },
-    matching_fund: { label: 'Matching Fund Kedaireka', color: 'bg-amber-50 text-amber-700 border-amber-200' },
-    industri: { label: 'Kerja Sama Industri', color: 'bg-cyan-50 text-cyan-700 border-cyan-200' },
-    mandiri: { label: 'Penelitian Mandiri', color: 'bg-slate-100 text-slate-700 border-slate-200' },
+  const schemeLabels: Record<string, { label: string }> = {
+    kemdikbud_bima: { label: 'Kemdikbud BIMA' },
+    brin: { label: 'Hibah BRIN' },
+    internal_kampus: { label: 'Hibah Internal PT' },
+    matching_fund: { label: 'Kedaireka' },
+    industri: { label: 'Kemitraan Industri' },
+    mandiri: { label: 'Penelitian Mandiri' },
   };
 
   return (
@@ -85,64 +83,77 @@ export default async function ProjectsPage() {
       }}
     >
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-8 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-zinc-200">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-            Daftar Penelitian & Hibah Riset
-          </h2>
-          <p className="text-sm text-slate-500 mt-1">
-            Kelola proposal, tim peneliti mahasiswa, anggaran SPJ, dan luaran publikasi terindeks.
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-extrabold text-zinc-950 tracking-tight">
+              Portofolio Penelitian & Hibah Riset
+            </h2>
+            <span className="font-mono text-xs px-2 py-0.5 rounded bg-zinc-200 text-zinc-800 font-bold">
+              {totalProjects} Riset
+            </span>
+          </div>
+          <p className="text-xs text-zinc-500 mt-1">
+            Kelola proposal hibah, koordinasi mahasiswa (MBKM), SPJ berbasis SBM, dan publikasi bereputasi.
           </p>
         </div>
         <Link
           href="/projects/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-indigo-100 transition-all shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-950 hover:bg-orange-600 text-white text-xs font-bold rounded-lg transition-colors shadow-xs shrink-0 cursor-pointer"
         >
-          <FolderPlus className="w-4 h-4" />
+          <FolderPlus className="w-3.5 h-3.5" />
           <span>Inisiasi Riset Baru</span>
         </Link>
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 my-8">
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-            <TrendingUp className="w-6 h-6" />
-          </div>
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block">
-              Total Proyek Riset
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+        <div className="bg-white p-4 rounded-xl border border-zinc-200 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+              Total Portofolio Riset
             </span>
-            <span className="text-2xl font-black text-slate-900 mt-0.5 block">
+            <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-black text-zinc-950 tracking-tight">
               {totalProjects}
             </span>
+            <span className="text-[11px] font-medium text-zinc-500">Judul Aktif</span>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-            <Wallet className="w-6 h-6" />
-          </div>
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block">
-              Total Alokasi Anggaran
+        <div className="bg-white p-4 rounded-xl border border-zinc-200 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+              Alokasi Pagu Anggaran
             </span>
-            <span className="text-2xl font-black text-slate-900 mt-0.5 block">
+            <span className="w-2 h-2 rounded-full bg-zinc-950"></span>
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-black text-zinc-950 tracking-tight font-mono">
               Rp {totalBudget.toLocaleString('id-ID')}
             </span>
           </div>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
-            <Send className="w-6 h-6" />
-          </div>
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block">
-              Status Bot Telegram
+        <div className="bg-white p-4 rounded-xl border border-zinc-200 shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+              Bot Notifikasi Telegram
             </span>
-            <span className="text-base font-bold text-slate-900 mt-0.5 block">
-              {profile?.telegram_chat_id ? 'Tersambung (Aktif)' : 'Belum Terhubung'}
+            <span
+              className={`w-2 h-2 rounded-full ${
+                profile?.telegram_chat_id ? 'bg-emerald-500' : 'bg-orange-500 animate-pulse'
+              }`}
+            ></span>
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-sm font-bold text-zinc-950 font-mono">
+              {profile?.telegram_chat_id ? 'TERKONEKSI' : 'BELUM AKTIF'}
+            </span>
+            <span className="text-[11px] text-zinc-500">
+              {profile?.telegram_chat_id ? 'H-14, H-7, H-1 Aktif' : 'Atur di menu Pengaturan'}
             </span>
           </div>
         </div>
@@ -150,85 +161,88 @@ export default async function ProjectsPage() {
 
       {/* Projects Grid */}
       {totalProjects === 0 ? (
-        <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center">
-          <div className="w-16 h-16 mx-auto rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 mb-4">
-            <FolderPlus className="w-8 h-8" />
+        <div className="bg-white rounded-xl border border-dashed border-zinc-300 p-12 text-center">
+          <div className="w-12 h-12 mx-auto rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-600 mb-3 border border-zinc-200">
+            <FolderPlus className="w-6 h-6" />
           </div>
-          <h3 className="text-base font-bold text-slate-900">Belum Ada Proyek Riset</h3>
-          <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">
-            Mulai kelola riset Anda sekarang. Tambahkan proposal hibah atau riset mandiri pertama Anda untuk memonitor tahapan hulu ke hilir.
+          <h3 className="text-sm font-bold text-zinc-950">Belum Ada Proyek Riset Terdaftar</h3>
+          <p className="text-xs text-zinc-500 mt-1 max-w-md mx-auto leading-relaxed">
+            Mulai kelola riset Anda sekarang. Daftarkan proposal hibah BIMA/BRIN atau penelitian mandiri untuk memantau WBS dan SPJ keuangan secara otomatis.
           </p>
-          <div className="mt-6">
+          <div className="mt-5">
             <Link
               href="/projects/new"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-md transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-950 hover:bg-orange-600 text-white text-xs font-bold rounded-lg transition-colors shadow-xs"
             >
-              <FolderPlus className="w-4 h-4" />
+              <FolderPlus className="w-3.5 h-3.5" />
               <span>Inisiasi Riset Pertama</span>
             </Link>
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {projects?.map((proj) => {
             const schemeInfo = schemeLabels[proj.scheme] || {
               label: proj.scheme,
-              color: 'bg-slate-100 text-slate-700 border-slate-200',
             };
 
             return (
               <div
                 key={proj.id}
-                className="bg-white rounded-2xl border border-slate-200/90 hover:border-indigo-300 p-6 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group"
+                className="bg-white rounded-xl border border-zinc-200 hover:border-zinc-900 p-5 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-3">
-                    <span
-                      className={`text-xs font-semibold px-2.5 py-1 rounded-lg border ${schemeInfo.color}`}
-                    >
+                    <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-zinc-100 text-zinc-800 border border-zinc-200">
                       {schemeInfo.label}
                     </span>
-                    <span className="text-xs font-medium text-slate-400">
+                    <span className="font-mono text-xs font-semibold text-zinc-500">
                       TA {proj.fiscal_year}
                     </span>
                   </div>
 
-                  <h3 className="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2">
+                  <h3 className="text-sm font-bold text-zinc-950 group-hover:text-orange-600 transition-colors line-clamp-2 leading-snug">
                     {proj.title}
                   </h3>
 
-                  <p className="text-xs text-slate-500 mt-1.5 flex items-center gap-1.5">
-                    <span className="font-semibold text-slate-700">Fokus:</span>
-                    <span>{proj.focus_area}</span>
+                  <p className="text-xs text-zinc-500 mt-2 flex items-center gap-1.5">
+                    <span className="font-bold text-zinc-700">Fokus:</span>
+                    <span className="truncate">{proj.focus_area}</span>
                   </p>
 
-                  <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-slate-100 text-xs text-slate-600">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>
-                        {proj.start_date} s/d {proj.end_date}
-                      </span>
+                  <div className="grid grid-cols-2 gap-3 mt-4 pt-3 border-t border-zinc-100 text-xs text-zinc-600">
+                    <div className="flex items-center gap-1.5 font-mono text-[11px]">
+                      <Calendar className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                      <span>{proj.start_date} s/d {proj.end_date}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 font-semibold text-slate-800">
-                      <Wallet className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                    <div className="flex items-center justify-end gap-1.5 font-mono text-xs font-bold text-zinc-900">
+                      <Wallet className="w-3.5 h-3.5 text-orange-600 shrink-0" />
                       <span>Rp {Number(proj.total_budget).toLocaleString('id-ID')}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span className="text-xs font-medium uppercase tracking-wider text-slate-500">
+                <div className="mt-5 pt-3.5 border-t border-zinc-100 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        proj.status === 'selesai'
+                          ? 'bg-emerald-500'
+                          : proj.status === 'aktif'
+                          ? 'bg-orange-500'
+                          : 'bg-zinc-400'
+                      }`}
+                    ></span>
+                    <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-zinc-600">
                       {proj.status}
                     </span>
                   </div>
                   <Link
                     href={`/projects/${proj.id}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-700 group-hover:translate-x-0.5 transition-all"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-900 group-hover:text-orange-600 transition-colors"
                   >
                     <span>Masuk Workspace</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
                   </Link>
                 </div>
               </div>

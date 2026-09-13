@@ -287,17 +287,17 @@ export default function ProjectWorkspaceTabs({
   const getRoleBadgeStyle = (role: string) => {
     switch (role) {
       case 'pi':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
+        return 'bg-zinc-950 text-white border-zinc-900 font-mono';
       case 'co_pi':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-zinc-800 text-zinc-100 border-zinc-700 font-mono';
       case 'student_ra':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+        return 'bg-orange-50 text-orange-800 border-orange-300 font-mono';
       case 'partner':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
+        return 'bg-zinc-100 text-zinc-900 border-zinc-300 font-mono';
       case 'auditor':
-        return 'bg-rose-100 text-rose-800 border-rose-200';
+        return 'bg-zinc-900 text-orange-400 border-zinc-800 font-mono';
       default:
-        return 'bg-slate-100 text-slate-700 border-slate-200';
+        return 'bg-zinc-100 text-zinc-800 border-zinc-300 font-mono';
     }
   };
 
@@ -332,7 +332,7 @@ export default function ProjectWorkspaceTabs({
   return (
     <div>
       {/* Tab Navigation */}
-      <div className="flex border-b border-slate-200 bg-white rounded-t-2xl px-4 pt-2 gap-2 overflow-x-auto">
+      <div className="flex border-b border-zinc-200 bg-white rounded-t-2xl px-4 pt-2 gap-2 overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -342,8 +342,8 @@ export default function ProjectWorkspaceTabs({
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 whitespace-nowrap transition-all ${
                 isActive
-                  ? 'border-indigo-600 text-indigo-600'
-                  : 'border-transparent text-slate-500 hover:text-slate-900 hover:border-slate-300'
+                  ? 'border-orange-600 text-orange-600'
+                  : 'border-transparent text-zinc-500 hover:text-zinc-900 hover:border-zinc-300'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -354,15 +354,15 @@ export default function ProjectWorkspaceTabs({
       </div>
 
       {/* Tab Content */}
-      <div className="bg-white rounded-b-2xl border-x border-b border-slate-200 p-6 shadow-xs">
+      <div className="bg-white rounded-b-2xl border-x border-b border-zinc-200 p-6 shadow-xs">
         {/* Active Role Indicator */}
-        <div className="mb-6 px-4 py-3 rounded-xl bg-slate-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+        <div className="mb-6 px-4 py-3 rounded-xl bg-zinc-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold text-xs border border-indigo-500/30 shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center text-orange-400 font-bold text-xs border border-orange-500/30 shrink-0">
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-[11px] text-slate-400 font-medium">Sesi Login Aktif / Peran Akses:</p>
+              <p className="text-[11px] text-zinc-400 font-medium">Sesi Login Aktif / Peran Akses:</p>
               <h4 className="text-xs font-bold text-white tracking-wide">
                 {getRoleLabel(userRole)}
               </h4>
@@ -386,20 +386,20 @@ export default function ProjectWorkspaceTabs({
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Box 1: Anggota Tim Riset */}
-              <div className="border border-slate-200 rounded-2xl p-5">
+              <div className="border border-zinc-200 rounded-xl p-5">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                  <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-orange-600" />
                     <span>Susunan Tim Peneliti & Mahasiswa</span>
                   </h3>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600">
                       {members.length} Anggota
                     </span>
                     {isPI && (
                       <button
                         onClick={() => setShowMemberModal(true)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-zinc-950 hover:bg-orange-600 text-white font-bold text-xs font-semibold rounded-lg shadow-xs transition-colors"
                       >
                         <Plus className="w-3 h-3" />
                         <span>Tambah Anggota</span>
@@ -412,13 +412,13 @@ export default function ProjectWorkspaceTabs({
                   {members.map((m) => (
                     <div
                       key={m.id}
-                      className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100"
+                      className="flex items-center justify-between p-3 rounded-xl bg-zinc-50 border border-zinc-100"
                     >
                       <div>
-                        <p className="text-xs font-bold text-slate-900">
+                        <p className="text-xs font-bold text-zinc-900">
                           {m.profile?.full_name || 'Anggota Riset'}
                         </p>
-                        <p className="text-[11px] text-slate-500">
+                        <p className="text-[11px] text-zinc-500">
                           {m.profile?.nidn_nim ? `NIDN/NIM: ${m.profile.nidn_nim}` : m.profile?.institution || '-'}
                         </p>
                       </div>
@@ -430,7 +430,7 @@ export default function ProjectWorkspaceTabs({
                           <Link
                             href={`/projects/${projectId}/student/${m.user_id}`}
                             target="_blank"
-                            className="text-[10px] font-bold text-indigo-600 hover:underline inline-flex items-center gap-0.5"
+                            className="text-[10px] font-bold text-orange-600 hover:underline inline-flex items-center gap-0.5"
                             title="Cetak Portofolio & Surat Konversi MBKM/Skripsi"
                           >
                             <span>Portofolio</span>
@@ -440,7 +440,7 @@ export default function ProjectWorkspaceTabs({
                         {isPI && m.user_id !== currentUserId && (
                           <button
                             onClick={() => handleRemoveMember(m.id)}
-                            className="p-1 text-slate-400 hover:text-rose-600 rounded transition-colors"
+                            className="p-1 text-zinc-400 hover:text-rose-600 rounded transition-colors"
                             title="Hapus Anggota dari Proyek"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -453,11 +453,11 @@ export default function ProjectWorkspaceTabs({
               </div>
 
               {/* Box 2: Integrasi Telegram Grup */}
-              <div className="border border-slate-200 rounded-2xl p-5 flex flex-col justify-between">
+              <div className="border border-zinc-200 rounded-xl p-5 flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                      <Send className="w-4 h-4 text-sky-600" />
+                    <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+                      <Send className="w-4 h-4 text-orange-600" />
                       <span>Kanal Bot Telegram Proyek</span>
                     </h3>
                     <span
@@ -471,23 +471,23 @@ export default function ProjectWorkspaceTabs({
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-600 leading-relaxed">
+                  <p className="text-xs text-zinc-600 leading-relaxed">
                     Chat ID Grup Telegram saat ini:{' '}
-                    <span className="font-mono font-bold text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded">
+                    <span className="font-mono font-bold text-zinc-900 bg-zinc-100 px-1.5 py-0.5 rounded">
                       {project.telegram_group_id || 'Belum diisi'}
                     </span>
                   </p>
-                  <p className="text-xs text-slate-500 mt-2">
-                    Bot <span className="font-semibold text-indigo-600">@SimRisetReminderBot</span> akan
+                  <p className="text-xs text-zinc-500 mt-2">
+                    Bot <span className="font-semibold text-orange-600">@SimRisetReminderBot</span> akan
                     mengirimkan rekap otomatis pengingat batas waktu dokumen dan logbook baru mahasiswa ke
                     grup ini.
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100 mt-4">
+                <div className="pt-4 border-t border-zinc-100 mt-4">
                   <button
                     onClick={() => setActiveTab('telegram')}
-                    className="w-full py-2 px-3 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors"
+                    className="w-full py-2 px-3 text-xs font-semibold rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-800 transition-colors"
                   >
                     Buka Konfigurasi Pengingat & Uji Ping
                   </button>
@@ -502,14 +502,14 @@ export default function ProjectWorkspaceTabs({
           <div>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Work Breakdown Structure (WBS)</h3>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <h3 className="text-sm font-bold text-zinc-900">Work Breakdown Structure (WBS)</h3>
+                <p className="text-xs text-zinc-500 mt-0.5">
                   Tugas dan milestone pengerjaan riset & software artefak SI.
                 </p>
               </div>
               <button
                 onClick={() => setShowTaskModal(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-xs"
+                className="inline-flex items-center gap-1.5 px-3 py-2 bg-zinc-950 hover:bg-orange-600 text-white font-bold text-xs font-semibold rounded-xl shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Tambah Tugas</span>
@@ -517,10 +517,10 @@ export default function ProjectWorkspaceTabs({
             </div>
 
             {tasks.length === 0 ? (
-              <div className="p-8 text-center border border-dashed border-slate-200 rounded-xl">
-                <CheckSquare className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                <p className="text-xs font-semibold text-slate-600">Belum ada tugas dibuat</p>
-                <p className="text-[11px] text-slate-400 mt-1">
+              <div className="p-8 text-center border border-dashed border-zinc-200 rounded-xl">
+                <CheckSquare className="w-8 h-8 text-zinc-300 mx-auto mb-2" />
+                <p className="text-xs font-semibold text-zinc-600">Belum ada tugas dibuat</p>
+                <p className="text-[11px] text-zinc-400 mt-1">
                   Klik "Tambah Tugas" untuk membagi milestone riset Anda.
                 </p>
               </div>
@@ -529,7 +529,7 @@ export default function ProjectWorkspaceTabs({
                 {tasks.map((task) => (
                   <div
                     key={task.id}
-                    className="p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-200 shadow-2xs flex items-center justify-between gap-4 transition-all"
+                    className="p-4 rounded-xl border border-zinc-200 bg-white hover:border-orange-200 shadow-2xs flex items-center justify-between gap-4 transition-all"
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
@@ -539,17 +539,17 @@ export default function ProjectWorkspaceTabs({
                               ? 'bg-emerald-100 text-emerald-800'
                               : task.status === 'in_progress'
                               ? 'bg-blue-100 text-blue-800'
-                              : 'bg-slate-100 text-slate-700'
+                              : 'bg-zinc-100 text-zinc-700'
                           }`}
                         >
                           {task.status}
                         </span>
-                        <h4 className="text-xs font-bold text-slate-900">{task.title}</h4>
+                        <h4 className="text-xs font-bold text-zinc-900">{task.title}</h4>
                       </div>
                       {task.description && (
-                        <p className="text-xs text-slate-500">{task.description}</p>
+                        <p className="text-xs text-zinc-500">{task.description}</p>
                       )}
-                      <div className="flex items-center gap-4 text-[11px] text-slate-400 pt-1">
+                      <div className="flex items-center gap-4 text-[11px] text-zinc-400 pt-1">
                         {task.due_date && (
                           <span className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
@@ -584,14 +584,14 @@ export default function ProjectWorkspaceTabs({
           <div>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Catatan Kegiatan Riset & Mahasiswa</h3>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <h3 className="text-sm font-bold text-zinc-900">Catatan Kegiatan Riset & Mahasiswa</h3>
+                <p className="text-xs text-zinc-500 mt-0.5">
                   Rekam jejak aktivitas harian asisten peneliti beserta verifikasi dosen pembimbing.
                 </p>
               </div>
               <button
                 onClick={() => setShowLogbookModal(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-xs"
+                className="inline-flex items-center gap-1.5 px-3 py-2 bg-zinc-950 hover:bg-orange-600 text-white font-bold text-xs font-semibold rounded-xl shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Isi Logbook Baru</span>
@@ -599,10 +599,10 @@ export default function ProjectWorkspaceTabs({
             </div>
 
             {logbooks.length === 0 ? (
-              <div className="p-8 text-center border border-dashed border-slate-200 rounded-xl">
-                <BookOpen className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                <p className="text-xs font-semibold text-slate-600">Belum ada catatan logbook</p>
-                <p className="text-[11px] text-slate-400 mt-1">
+              <div className="p-8 text-center border border-dashed border-zinc-200 rounded-xl">
+                <BookOpen className="w-8 h-8 text-zinc-300 mx-auto mb-2" />
+                <p className="text-xs font-semibold text-zinc-600">Belum ada catatan logbook</p>
+                <p className="text-[11px] text-zinc-400 mt-1">
                   Mahasiswa atau asisten peneliti dapat mengisi kemajuan harian di sini.
                 </p>
               </div>
@@ -611,19 +611,19 @@ export default function ProjectWorkspaceTabs({
                 {logbooks.map((log) => (
                   <div
                     key={log.id}
-                    className="p-5 rounded-xl border border-slate-200 bg-white hover:border-indigo-200 shadow-2xs space-y-3"
+                    className="p-5 rounded-xl border border-zinc-200 bg-white hover:border-orange-200 shadow-2xs space-y-3"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
-                        <span className="text-xs font-bold text-slate-900">
+                        <span className="text-xs font-bold text-zinc-900">
                           {log.student_profile?.full_name || 'Asisten Peneliti'}
                         </span>
-                        <span className="text-xs text-slate-400">•</span>
-                        <span className="text-xs text-slate-500 flex items-center gap-1">
+                        <span className="text-xs text-zinc-400">•</span>
+                        <span className="text-xs text-zinc-500 flex items-center gap-1">
                           <Calendar className="w-3.5 h-3.5" />
                           {log.activity_date}
                         </span>
-                        <span className="text-xs text-slate-500 flex items-center gap-1">
+                        <span className="text-xs text-zinc-500 flex items-center gap-1">
                           <Clock className="w-3.5 h-3.5" />
                           {log.hours_spent} Jam
                         </span>
@@ -641,7 +641,7 @@ export default function ProjectWorkspaceTabs({
                       </span>
                     </div>
 
-                    <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-line">
+                    <p className="text-xs text-zinc-700 leading-relaxed whitespace-pre-line">
                       {log.activity_description}
                     </p>
 
@@ -651,7 +651,7 @@ export default function ProjectWorkspaceTabs({
                           href={log.evidence_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 hover:underline"
+                          className="inline-flex items-center gap-1 text-xs font-medium text-orange-600 hover:text-orange-700 hover:underline"
                         >
                           <ExternalLink className="w-3.5 h-3.5" />
                           <span>Tautan Bukti Hasil / Commit Git</span>
@@ -661,7 +661,7 @@ export default function ProjectWorkspaceTabs({
 
                     {/* Feedback & Verifikasi Dosen */}
                     {isPI && log.status === 'submitted' && (
-                      <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                      <div className="pt-3 border-t border-zinc-100 flex items-center justify-end gap-2">
                         <button
                           onClick={() => verifyLogbook(log.id, projectId, 'approved')}
                           className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200"
@@ -689,36 +689,36 @@ export default function ProjectWorkspaceTabs({
         {activeTab === 'expenses' && (
           <div className="space-y-6">
             {/* Budget Progress Bar */}
-            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200">
+            <div className="p-5 rounded-xl bg-zinc-50 border border-zinc-200">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">
                     Serapan Anggaran Riset
                   </span>
                   <div className="flex items-baseline gap-2 mt-0.5">
-                    <span className="text-xl font-black text-slate-900">
+                    <span className="text-xl font-black text-zinc-900">
                       Rp {totalSpent.toLocaleString('id-ID')}
                     </span>
-                    <span className="text-xs text-slate-500">
+                    <span className="text-xs text-zinc-500">
                       dari total pagu Rp {Number(project.total_budget).toLocaleString('id-ID')}
                     </span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className="text-sm font-black text-indigo-600">
+                  <span className="text-sm font-black text-orange-600">
                     {project.total_budget > 0
                       ? Math.round((totalSpent / Number(project.total_budget)) * 100)
                       : 0}
                     %
                   </span>
-                  <span className="text-xs text-slate-500 block">Terserap</span>
+                  <span className="text-xs text-zinc-500 block">Terserap</span>
                 </div>
               </div>
 
               {/* Progress Bar */}
-              <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden">
+              <div className="w-full h-3 bg-zinc-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-indigo-600 rounded-full transition-all duration-500"
+                  className="h-full bg-orange-600 rounded-full transition-all duration-500"
                   style={{
                     width: `${Math.min(
                       100,
@@ -730,22 +730,22 @@ export default function ProjectWorkspaceTabs({
                 />
               </div>
 
-              <div className="flex items-center justify-between text-xs text-slate-500 mt-2">
+              <div className="flex items-center justify-between text-xs text-zinc-500 mt-2">
                 <span>Sisa Pagu: Rp {Math.max(0, Number(project.total_budget) - totalSpent).toLocaleString('id-ID')}</span>
                 <span>{expenses.length} Bukti Kuitansi Tersimpan di Cloudinary</span>
               </div>
             </div>
 
             {/* Sub-tab switcher & Action Buttons */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-              <div className="flex rounded-xl bg-slate-100 p-1">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-100 pb-4">
+              <div className="flex rounded-xl bg-zinc-100 p-1">
                 <button
                   type="button"
                   onClick={() => setBudgetTab('expenses')}
                   className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
                     budgetTab === 'expenses'
-                      ? 'bg-white text-slate-900 shadow-xs'
-                      : 'text-slate-500 hover:text-slate-900'
+                      ? 'bg-white text-zinc-900 shadow-xs'
+                      : 'text-zinc-500 hover:text-zinc-900'
                   }`}
                 >
                   Realisasi Belanja & SPJ ({expenses.length})
@@ -755,8 +755,8 @@ export default function ProjectWorkspaceTabs({
                   onClick={() => setBudgetTab('rab')}
                   className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
                     budgetTab === 'rab'
-                      ? 'bg-white text-slate-900 shadow-xs'
-                      : 'text-slate-500 hover:text-slate-900'
+                      ? 'bg-white text-zinc-900 shadow-xs'
+                      : 'text-zinc-500 hover:text-zinc-900'
                   }`}
                 >
                   Rencana Anggaran (RAB) ({budgetItems.length})
@@ -769,14 +769,14 @@ export default function ProjectWorkspaceTabs({
                     <Link
                       href={`/projects/${projectId}/spj/print`}
                       target="_blank"
-                      className="inline-flex items-center gap-1.5 px-3 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-2 border border-zinc-200 hover:bg-zinc-50 text-zinc-700 text-xs font-semibold rounded-xl transition-colors"
                     >
                       <Printer className="w-3.5 h-3.5" />
                       <span>Cetak Format SPJ</span>
                     </Link>
                     <button
                       onClick={() => setShowExpenseModal(true)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-zinc-950 hover:bg-orange-600 text-white font-bold text-xs font-semibold rounded-xl shadow-xs transition-colors"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Catat Kuitansi Belanja</span>
@@ -785,7 +785,7 @@ export default function ProjectWorkspaceTabs({
                 ) : (
                   <button
                     onClick={() => setShowBudgetModal(true)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-zinc-950 hover:bg-orange-600 text-white font-bold text-xs font-semibold rounded-xl shadow-xs transition-colors"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Tambah Item RAB</span>
@@ -798,17 +798,17 @@ export default function ProjectWorkspaceTabs({
             {budgetTab === 'expenses' && (
               <div>
                 {expenses.length === 0 ? (
-                  <div className="p-8 text-center border border-dashed border-slate-200 rounded-xl">
-                    <Receipt className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                    <p className="text-xs font-semibold text-slate-600">Belum ada realisasi belanja dicatat</p>
-                    <p className="text-[11px] text-slate-400 mt-1">
+                  <div className="p-8 text-center border border-dashed border-zinc-200 rounded-xl">
+                    <Receipt className="w-8 h-8 text-zinc-300 mx-auto mb-2" />
+                    <p className="text-xs font-semibold text-zinc-600">Belum ada realisasi belanja dicatat</p>
+                    <p className="text-[11px] text-zinc-400 mt-1">
                       Klik "Catat Kuitansi Belanja" untuk mengunggah bukti nota kuitansi pertama Anda.
                     </p>
                   </div>
                 ) : (
-                  <div className="border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+                  <div className="border border-zinc-200 rounded-xl overflow-hidden shadow-2xs">
                     <table className="w-full text-left text-xs">
-                      <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider">
+                      <thead className="bg-zinc-50 border-b border-zinc-200 text-zinc-600 font-bold uppercase tracking-wider">
                         <tr>
                           <th className="px-4 py-3">Tanggal</th>
                           <th className="px-4 py-3">Uraian Belanja</th>
@@ -819,20 +819,20 @@ export default function ProjectWorkspaceTabs({
                           <th className="px-4 py-3 text-center">Aksi</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-zinc-100">
                         {expenses.map((exp) => (
-                          <tr key={exp.id} className="hover:bg-slate-50/50">
-                            <td className="px-4 py-3 whitespace-nowrap text-slate-600">{exp.expense_date}</td>
-                            <td className="px-4 py-3 font-semibold text-slate-900">{exp.description}</td>
+                          <tr key={exp.id} className="hover:bg-zinc-50/50">
+                            <td className="px-4 py-3 whitespace-nowrap text-zinc-600">{exp.expense_date}</td>
+                            <td className="px-4 py-3 font-semibold text-zinc-900">{exp.description}</td>
                             <td className="px-4 py-3">
-                              <span className="px-2 py-0.5 rounded bg-slate-100 text-[10px] font-bold uppercase text-slate-700">
+                              <span className="px-2 py-0.5 rounded bg-zinc-100 text-[10px] font-bold uppercase text-zinc-700">
                                 {exp.tax_type} {exp.tax_amount > 0 && `(Rp ${Number(exp.tax_amount).toLocaleString('id-ID')})`}
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-right font-semibold text-slate-800 whitespace-nowrap">
+                            <td className="px-4 py-3 text-right font-semibold text-zinc-800 whitespace-nowrap">
                               Rp {Number(exp.gross_amount).toLocaleString('id-ID')}
                             </td>
-                            <td className="px-4 py-3 text-right font-bold text-indigo-700 whitespace-nowrap">
+                            <td className="px-4 py-3 text-right font-bold text-orange-700 whitespace-nowrap">
                               Rp {Number(exp.net_amount || exp.gross_amount).toLocaleString('id-ID')}
                             </td>
                             <td className="px-4 py-3 text-center whitespace-nowrap">
@@ -841,19 +841,19 @@ export default function ProjectWorkspaceTabs({
                                   href={exp.receipt_cloudinary_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:underline"
+                                  className="inline-flex items-center gap-1 text-xs font-semibold text-orange-600 hover:underline"
                                 >
                                   <span>Lihat Nota</span>
                                   <ExternalLink className="w-3 h-3" />
                                 </a>
                               ) : (
-                                <span className="text-slate-400">-</span>
+                                <span className="text-zinc-400">-</span>
                               )}
                             </td>
                             <td className="px-4 py-3 text-center whitespace-nowrap">
                               <button
                                 onClick={() => deleteExpense(exp.id, projectId)}
-                                className="p-1 text-slate-400 hover:text-red-600 transition-colors"
+                                className="p-1 text-zinc-400 hover:text-red-600 transition-colors"
                                 title="Hapus Kuitansi"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -872,17 +872,17 @@ export default function ProjectWorkspaceTabs({
             {budgetTab === 'rab' && (
               <div>
                 {budgetItems.length === 0 ? (
-                  <div className="p-8 text-center border border-dashed border-slate-200 rounded-xl">
-                    <PieChart className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                    <p className="text-xs font-semibold text-slate-600">Belum ada item RAB dirancang</p>
-                    <p className="text-[11px] text-slate-400 mt-1">
+                  <div className="p-8 text-center border border-dashed border-zinc-200 rounded-xl">
+                    <PieChart className="w-8 h-8 text-zinc-300 mx-auto mb-2" />
+                    <p className="text-xs font-semibold text-zinc-600">Belum ada item RAB dirancang</p>
+                    <p className="text-[11px] text-zinc-400 mt-1">
                       Rinci rencana pengeluaran berdasarkan standar biaya masukan (SBM) untuk memudahkan SPJ.
                     </p>
                   </div>
                 ) : (
-                  <div className="border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+                  <div className="border border-zinc-200 rounded-xl overflow-hidden shadow-2xs">
                     <table className="w-full text-left text-xs">
-                      <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider">
+                      <thead className="bg-zinc-50 border-b border-zinc-200 text-zinc-600 font-bold uppercase tracking-wider">
                         <tr>
                           <th className="px-4 py-3">Kategori SBM</th>
                           <th className="px-4 py-3">Uraian Komponen</th>
@@ -892,26 +892,26 @@ export default function ProjectWorkspaceTabs({
                           <th className="px-4 py-3 text-center">Aksi</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-zinc-100">
                         {budgetItems.map((item) => (
-                          <tr key={item.id} className="hover:bg-slate-50/50">
+                          <tr key={item.id} className="hover:bg-zinc-50/50">
                             <td className="px-4 py-3 whitespace-nowrap">
-                              <span className="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase">
+                              <span className="px-2 py-0.5 rounded bg-orange-50 text-orange-700 text-[10px] font-bold uppercase">
                                 {item.category.replace(/_/g, ' ')}
                               </span>
                             </td>
-                            <td className="px-4 py-3 font-semibold text-slate-900">{item.description}</td>
-                            <td className="px-4 py-3 text-right text-slate-700 whitespace-nowrap">
+                            <td className="px-4 py-3 font-semibold text-zinc-900">{item.description}</td>
+                            <td className="px-4 py-3 text-right text-zinc-700 whitespace-nowrap">
                               Rp {Number(item.unit_price).toLocaleString('id-ID')}
                             </td>
-                            <td className="px-4 py-3 text-center font-bold text-slate-800">{item.quantity}</td>
-                            <td className="px-4 py-3 text-right font-black text-slate-900 whitespace-nowrap">
+                            <td className="px-4 py-3 text-center font-bold text-zinc-800">{item.quantity}</td>
+                            <td className="px-4 py-3 text-right font-black text-zinc-900 whitespace-nowrap">
                               Rp {Number(item.total_planned || item.unit_price * item.quantity).toLocaleString('id-ID')}
                             </td>
                             <td className="px-4 py-3 text-center whitespace-nowrap">
                               <button
                                 onClick={() => deleteBudgetItem(item.id, projectId)}
-                                className="p-1 text-slate-400 hover:text-red-600 transition-colors"
+                                className="p-1 text-zinc-400 hover:text-red-600 transition-colors"
                                 title="Hapus Item RAB"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -933,14 +933,14 @@ export default function ProjectWorkspaceTabs({
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Luaran Riset, Publikasi & HKI</h3>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <h3 className="text-sm font-bold text-zinc-900">Luaran Riset, Publikasi & HKI</h3>
+                <p className="text-xs text-zinc-500 mt-0.5">
                   Pelacakan siklus hidup manuskrip jurnal, pendaftaran hak cipta software, dan prototipe sistem.
                 </p>
               </div>
               <button
                 onClick={() => setShowOutputModal(true)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors self-start sm:self-auto"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-zinc-950 hover:bg-orange-600 text-white font-bold text-xs font-semibold rounded-xl shadow-xs transition-colors self-start sm:self-auto"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Tambah Luaran Riset</span>
@@ -948,10 +948,10 @@ export default function ProjectWorkspaceTabs({
             </div>
 
             {outputs.length === 0 ? (
-              <div className="p-8 text-center border border-dashed border-slate-200 rounded-xl">
-                <Award className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                <p className="text-xs font-semibold text-slate-600">Belum ada luaran riset terdaftar</p>
-                <p className="text-[11px] text-slate-400 mt-1">
+              <div className="p-8 text-center border border-dashed border-zinc-200 rounded-xl">
+                <Award className="w-8 h-8 text-zinc-300 mx-auto mb-2" />
+                <p className="text-xs font-semibold text-zinc-600">Belum ada luaran riset terdaftar</p>
+                <p className="text-[11px] text-zinc-400 mt-1">
                   Daftarkan target jurnal ilmiah, konferensi, atau hak cipta program untuk memonitor tahapan review.
                 </p>
               </div>
@@ -960,17 +960,17 @@ export default function ProjectWorkspaceTabs({
                 {outputs.map((out) => (
                   <div
                     key={out.id}
-                    className="p-5 rounded-xl border border-slate-200 bg-white hover:border-indigo-200 shadow-2xs space-y-3 flex flex-col justify-between"
+                    className="p-5 rounded-xl border border-zinc-200 bg-white hover:border-orange-200 shadow-2xs space-y-3 flex flex-col justify-between"
                   >
                     <div>
                       <div className="flex items-center justify-between gap-2 mb-2">
-                        <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
+                        <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-200">
                           {out.output_type.replace(/_/g, ' ')}
                         </span>
                         <select
                           value={out.status}
                           onChange={(e) => updateResearchOutputStatus(out.id, projectId, e.target.value)}
-                          className="text-[11px] font-bold uppercase px-2 py-0.5 rounded border border-slate-200 bg-slate-50 text-slate-700"
+                          className="text-[11px] font-bold uppercase px-2 py-0.5 rounded border border-zinc-200 bg-zinc-50 text-zinc-700"
                         >
                           <option value="drafting">Drafting</option>
                           <option value="submitted">Submitted</option>
@@ -982,9 +982,9 @@ export default function ProjectWorkspaceTabs({
                         </select>
                       </div>
 
-                      <h4 className="text-xs font-bold text-slate-900 leading-snug">{out.title}</h4>
-                      <p className="text-xs text-slate-500 mt-1">
-                        Target: <span className="font-semibold text-slate-700">{out.target_outlet || '-'}</span>
+                      <h4 className="text-xs font-bold text-zinc-900 leading-snug">{out.title}</h4>
+                      <p className="text-xs text-zinc-500 mt-1">
+                        Target: <span className="font-semibold text-zinc-700">{out.target_outlet || '-'}</span>
                       </p>
 
                       {out.current_deadline && (
@@ -995,30 +995,30 @@ export default function ProjectWorkspaceTabs({
                       )}
 
                       {out.doi_or_reg_number && (
-                        <p className="text-[11px] text-indigo-600 font-mono mt-1">
+                        <p className="text-[11px] text-orange-600 font-mono mt-1">
                           DOI / No. Reg: {out.doi_or_reg_number}
                         </p>
                       )}
                     </div>
 
-                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <div className="pt-3 border-t border-zinc-100 flex items-center justify-between text-xs">
                       {out.document_url ? (
                         <a
                           href={out.document_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-indigo-600 hover:underline inline-flex items-center gap-1 font-semibold"
+                          className="text-orange-600 hover:underline inline-flex items-center gap-1 font-semibold"
                         >
                           <span>Unduh / Buka Dokumen</span>
                           <ExternalLink className="w-3 h-3" />
                         </a>
                       ) : (
-                        <span className="text-slate-400">Belum ada file terlampir</span>
+                        <span className="text-zinc-400">Belum ada file terlampir</span>
                       )}
 
                       <button
                         onClick={() => deleteResearchOutput(out.id, projectId)}
-                        className="text-slate-400 hover:text-red-600 transition-colors p-1"
+                        className="text-zinc-400 hover:text-red-600 transition-colors p-1"
                         title="Hapus Luaran"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -1035,20 +1035,20 @@ export default function ProjectWorkspaceTabs({
         {activeTab === 'telegram' && (
           <div className="space-y-6">
             {/* Box Edit Chat ID Telegram Grup */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+            <div className="bg-white rounded-xl border border-zinc-200 p-5 shadow-xs space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <Send className="w-4 h-4 text-indigo-600" />
+                  <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+                    <Send className="w-4 h-4 text-orange-600" />
                     <span>Pengaturan Chat ID Grup Telegram Tim</span>
                   </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <p className="text-xs text-zinc-500 mt-0.5">
                     Masukkan Chat ID grup (biasanya bernilai negatif diawali -100) tempat bot @SimRisetReminderBot bergabung.
                   </p>
                 </div>
                 <Link
                   href={`/projects/${projectId}/edit`}
-                  className="text-xs font-semibold text-indigo-600 hover:underline inline-flex items-center gap-1 self-start sm:self-auto"
+                  className="text-xs font-semibold text-orange-600 hover:underline inline-flex items-center gap-1 self-start sm:self-auto"
                 >
                   <span>Edit Semua Data Proyek</span>
                   <ExternalLink className="w-3 h-3" />
@@ -1078,20 +1078,20 @@ export default function ProjectWorkspaceTabs({
                   value={chatIdInput}
                   onChange={(e) => setChatIdInput(e.target.value)}
                   placeholder="Contoh: -1002345678901"
-                  className="flex-1 px-3.5 py-2 text-xs font-mono border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="flex-1 px-3.5 py-2 text-xs font-mono border border-zinc-300 rounded-xl focus:ring-2 focus:ring-orange-600 focus:border-orange-600"
                 />
                 <button
                   type="submit"
                   disabled={chatIdLoading}
-                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-all disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-zinc-950 hover:bg-orange-600 text-white font-bold text-xs font-semibold rounded-xl shadow-xs transition-all disabled:opacity-50"
                 >
                   {chatIdLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>Simpan Chat ID</span>
                 </button>
               </form>
 
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-[11px] text-slate-600 space-y-1">
-                <span className="font-bold text-slate-800 block">💡 Cara Cepat Cek Chat ID Grup:</span>
+              <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-100 text-[11px] text-zinc-600 space-y-1">
+                <span className="font-bold text-zinc-800 block">💡 Cara Cepat Cek Chat ID Grup:</span>
                 <p>
                   1. Masukkan bot <strong>@SimRisetReminderBot</strong> dan <strong>@RawDataBot</strong> ke dalam grup Telegram Anda.<br />
                   2. Bot <code>@RawDataBot</code> akan mengirim pesan JSON; cari baris <code>&quot;id&quot;: -100xxxxxxxxxx</code> di bagian <code>chat</code>.<br />
@@ -1100,15 +1100,15 @@ export default function ProjectWorkspaceTabs({
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-xl bg-zinc-50 border border-zinc-200">
               <div>
-                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                  <Send className="w-4 h-4 text-sky-600" />
+                <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+                  <Send className="w-4 h-4 text-orange-600" />
                   <span>Uji Coba Pengiriman Pengingat Telegram</span>
                 </h3>
-                <p className="text-xs text-slate-600 mt-1">
+                <p className="text-xs text-zinc-600 mt-1">
                   Kirim pesan instan ke Chat ID grup{' '}
-                  <span className="font-mono font-bold text-slate-900">
+                  <span className="font-mono font-bold text-zinc-900">
                     {project.telegram_group_id || '(Belum disetel)'}
                   </span>{' '}
                   untuk memastikan bot aktif.
@@ -1118,7 +1118,7 @@ export default function ProjectWorkspaceTabs({
               <button
                 onClick={handleTestPing}
                 disabled={loading || !project.telegram_group_id}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-all disabled:opacity-50 shrink-0"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-950 hover:bg-orange-600 text-white font-bold text-xs font-semibold rounded-xl shadow-xs transition-all disabled:opacity-50 shrink-0"
               >
                 {loading ? (
                   <>
@@ -1161,21 +1161,21 @@ export default function ProjectWorkspaceTabs({
 
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500">
                   Aturan Pengingat Otomatis Aktif (Rules Engine)
                 </h4>
                 <button
                   onClick={() => setShowRuleModal(true)}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-zinc-950 hover:bg-orange-600 text-white font-bold text-xs font-semibold rounded-lg shadow-xs transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Tambah Aturan</span>
                 </button>
               </div>
 
-              <div className="border border-slate-200 rounded-xl overflow-hidden">
+              <div className="border border-zinc-200 rounded-xl overflow-hidden">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider">
+                  <thead className="bg-zinc-50 border-b border-zinc-200 text-zinc-600 font-bold uppercase tracking-wider">
                     <tr>
                       <th className="px-4 py-3">Agenda Target</th>
                       <th className="px-4 py-3">Pemicu Waktu</th>
@@ -1184,10 +1184,10 @@ export default function ProjectWorkspaceTabs({
                       <th className="px-4 py-3 text-center">Aksi</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-zinc-100">
                     {notificationRules.map((rule) => (
-                      <tr key={rule.id} className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-semibold text-slate-800">
+                      <tr key={rule.id} className="hover:bg-zinc-50/50">
+                        <td className="px-4 py-3 font-semibold text-zinc-800">
                           {rule.event_type === 'interim_report'
                             ? 'Laporan Kemajuan / Monev'
                             : rule.event_type === 'final_report'
@@ -1198,10 +1198,10 @@ export default function ProjectWorkspaceTabs({
                             ? 'Batas Revisi Jurnal / Luaran'
                             : rule.event_type}
                         </td>
-                        <td className="px-4 py-3 text-slate-600">
+                        <td className="px-4 py-3 text-zinc-600">
                           H{rule.trigger_offset_days} ({Math.abs(rule.trigger_offset_days)} Hari Sebelum Deadline)
                         </td>
-                        <td className="px-4 py-3 text-slate-600 font-mono">
+                        <td className="px-4 py-3 text-zinc-600 font-mono">
                           {rule.dispatch_time} WIB
                         </td>
                         <td className="px-4 py-3">
@@ -1210,7 +1210,7 @@ export default function ProjectWorkspaceTabs({
                             className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                               rule.is_active
                                 ? 'bg-emerald-100 text-emerald-800'
-                                : 'bg-slate-100 text-slate-500'
+                                : 'bg-zinc-100 text-zinc-500'
                             }`}
                           >
                             {rule.is_active ? 'AKTIF' : 'NONAKTIF'}
@@ -1219,7 +1219,7 @@ export default function ProjectWorkspaceTabs({
                         <td className="px-4 py-3 text-center">
                           <button
                             onClick={() => deleteNotificationRule(rule.id, projectId)}
-                            className="p-1 text-slate-400 hover:text-red-600 transition-colors"
+                            className="p-1 text-zinc-400 hover:text-red-600 transition-colors"
                             title="Hapus Aturan"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -1237,41 +1237,41 @@ export default function ProjectWorkspaceTabs({
 
       {/* Modal Tambah Task */}
       {showTaskModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-100">
-            <h3 className="text-sm font-bold text-slate-900 mb-4">Tambah Milestone / Tugas Riset</h3>
+        <div className="fixed inset-0 bg-zinc-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl border border-zinc-100">
+            <h3 className="text-sm font-bold text-zinc-900 mb-4">Tambah Milestone / Tugas Riset</h3>
             <form onSubmit={handleCreateTask} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Judul Tugas</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Judul Tugas</label>
                 <input
                   name="title"
                   required
                   placeholder="Contoh: Perancangan Schema ERD & DDL"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Deskripsi</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Deskripsi</label>
                 <textarea
                   name="description"
                   rows={2}
                   placeholder="Rincian lingkup tugas"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Batas Waktu (Deadline)</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Batas Waktu (Deadline)</label>
                 <input
                   name="dueDate"
                   type="date"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Penugasan (PIC)</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Penugasan (PIC)</label>
                 <select
                   name="assignedTo"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg bg-white"
                 >
                   <option value="">-- Pilih Anggota Tim --</option>
                   {members.map((m) => (
@@ -1285,14 +1285,14 @@ export default function ProjectWorkspaceTabs({
                 <button
                   type="button"
                   onClick={() => setShowTaskModal(false)}
-                  className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900"
+                  className="px-3 py-1.5 text-xs text-zinc-600 hover:text-zinc-900"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg"
+                  className="px-4 py-1.5 text-xs font-semibold text-white bg-zinc-950 hover:bg-orange-600 rounded-lg"
                 >
                   Simpan Tugas
                 </button>
@@ -1304,48 +1304,48 @@ export default function ProjectWorkspaceTabs({
 
       {/* Modal Tambah Logbook */}
       {showLogbookModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-100">
-            <h3 className="text-sm font-bold text-slate-900 mb-4">Isi Catatan Logbook Aktivitas</h3>
+        <div className="fixed inset-0 bg-zinc-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl border border-zinc-100">
+            <h3 className="text-sm font-bold text-zinc-900 mb-4">Isi Catatan Logbook Aktivitas</h3>
             <form onSubmit={handleSubmitLogbook} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Tanggal Kegiatan</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Tanggal Kegiatan</label>
                 <input
                   name="activityDate"
                   type="date"
                   required
                   defaultValue={new Date().toISOString().split('T')[0]}
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Uraian Aktivitas Riset</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Uraian Aktivitas Riset</label>
                 <textarea
                   name="activityDescription"
                   rows={3}
                   required
                   placeholder="Uraikan hasil pengerjaan, eksperimen data, atau modul software yang diselesaikan hari ini."
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Durasi (Jam)</label>
+                  <label className="block text-xs font-semibold text-zinc-700 mb-1">Durasi (Jam)</label>
                   <input
                     name="hoursSpent"
                     type="number"
                     defaultValue={2}
                     min={1}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Link Bukti / Git</label>
+                  <label className="block text-xs font-semibold text-zinc-700 mb-1">Link Bukti / Git</label>
                   <input
                     name="evidenceUrl"
                     type="url"
                     placeholder="https://github.com/..."
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                   />
                 </div>
               </div>
@@ -1353,14 +1353,14 @@ export default function ProjectWorkspaceTabs({
                 <button
                   type="button"
                   onClick={() => setShowLogbookModal(false)}
-                  className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900"
+                  className="px-3 py-1.5 text-xs text-zinc-600 hover:text-zinc-900"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg"
+                  className="px-4 py-1.5 text-xs font-semibold text-white bg-zinc-950 hover:bg-orange-600 rounded-lg"
                 >
                   Kirim Logbook
                 </button>
@@ -1372,10 +1372,10 @@ export default function ProjectWorkspaceTabs({
 
       {/* Modal Catat Realisasi Belanja & Kuitansi Cloudinary */}
       {showExpenseModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-sm font-bold text-slate-900 mb-1">Catat Realisasi Belanja & Unggah Kuitansi</h3>
-            <p className="text-xs text-slate-500 mb-4">
+        <div className="fixed inset-0 bg-zinc-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl p-6 max-w-lg w-full shadow-2xl border border-zinc-100 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-sm font-bold text-zinc-900 mb-1">Catat Realisasi Belanja & Unggah Kuitansi</h3>
+            <p className="text-xs text-zinc-500 mb-4">
               Bukti foto nota/struk akan diunggah dan dikompresi otomatis ke Cloudinary.
             </p>
 
@@ -1387,21 +1387,21 @@ export default function ProjectWorkspaceTabs({
 
             <form onSubmit={handleCreateExpense} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Tanggal Belanja</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Tanggal Belanja</label>
                 <input
                   name="expenseDate"
                   type="date"
                   required
                   defaultValue={new Date().toISOString().split('T')[0]}
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Kategori RAB Terkait (Opsional)</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Kategori RAB Terkait (Opsional)</label>
                 <select
                   name="budgetItemId"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg bg-white"
                 >
                   <option value="">-- Tanpa Rujukan RAB --</option>
                   {budgetItems.map((item) => (
@@ -1413,18 +1413,18 @@ export default function ProjectWorkspaceTabs({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Uraian / Deskripsi Belanja</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Uraian / Deskripsi Belanja</label>
                 <input
                   name="description"
                   required
                   placeholder="Contoh: Pembelian SSD NVMe untuk Server Pengujian Model"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Nominal Bruto (Rp)</label>
+                  <label className="block text-xs font-semibold text-zinc-700 mb-1">Nominal Bruto (Rp)</label>
                   <input
                     name="grossAmount"
                     type="number"
@@ -1432,16 +1432,16 @@ export default function ProjectWorkspaceTabs({
                     min={1000}
                     step={1000}
                     placeholder="1500000"
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Jenis Pajak</label>
+                  <label className="block text-xs font-semibold text-zinc-700 mb-1">Jenis Pajak</label>
                   <select
                     name="taxType"
                     defaultValue="none"
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white"
+                    className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg bg-white"
                   >
                     <option value="none">Tanpa Pajak</option>
                     <option value="pph21">PPh 21 (Honor/Narasumber ~5%)</option>
@@ -1452,7 +1452,7 @@ export default function ProjectWorkspaceTabs({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">
                   Unggah Bukti Kuitansi / Nota (Foto / PDF) <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -1460,22 +1460,22 @@ export default function ProjectWorkspaceTabs({
                   type="file"
                   required
                   accept="image/*,application/pdf"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-slate-50 file:mr-3 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg bg-zinc-50 file:mr-3 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-indigo-100"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <div className="flex justify-end gap-2 pt-2 border-t border-zinc-100">
                 <button
                   type="button"
                   onClick={() => setShowExpenseModal(false)}
-                  className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900"
+                  className="px-3 py-1.5 text-xs text-zinc-600 hover:text-zinc-900"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={expenseLoading}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-zinc-950 hover:bg-orange-600 rounded-lg shadow-xs disabled:opacity-50"
                 >
                   {expenseLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>Simpan & Upload Cloudinary</span>
@@ -1488,10 +1488,10 @@ export default function ProjectWorkspaceTabs({
 
       {/* Modal Tambah Item RAB */}
       {showBudgetModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-100">
-            <h3 className="text-sm font-bold text-slate-900 mb-1">Rancang Rencana Anggaran (RAB)</h3>
-            <p className="text-xs text-slate-500 mb-4">
+        <div className="fixed inset-0 bg-zinc-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl border border-zinc-100">
+            <h3 className="text-sm font-bold text-zinc-900 mb-1">Rancang Rencana Anggaran (RAB)</h3>
+            <p className="text-xs text-zinc-500 mb-4">
               Tambahkan pos belanja berdasarkan Standar Biaya Masukan (SBM).
             </p>
 
@@ -1503,11 +1503,11 @@ export default function ProjectWorkspaceTabs({
 
             <form onSubmit={handleCreateBudgetItem} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Kategori Belanja SBM</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Kategori Belanja SBM</label>
                 <select
                   name="category"
                   defaultValue="bahan_habis_pakai"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white capitalize"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg bg-white capitalize"
                 >
                   <option value="bahan_habis_pakai">Bahan Habis Pakai</option>
                   <option value="sewa_alat">Sewa Peralatan / Server Cloud</option>
@@ -1519,18 +1519,18 @@ export default function ProjectWorkspaceTabs({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Uraian Komponen</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Uraian Komponen</label>
                 <input
                   name="description"
                   required
                   placeholder="Contoh: Langganan Google Cloud Platform GPU 3 Bulan"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Biaya Satuan (Rp)</label>
+                  <label className="block text-xs font-semibold text-zinc-700 mb-1">Biaya Satuan (Rp)</label>
                   <input
                     name="unitPrice"
                     type="number"
@@ -1538,35 +1538,35 @@ export default function ProjectWorkspaceTabs({
                     min={1000}
                     step={1000}
                     placeholder="2500000"
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Volume / Kuantitas</label>
+                  <label className="block text-xs font-semibold text-zinc-700 mb-1">Volume / Kuantitas</label>
                   <input
                     name="quantity"
                     type="number"
                     required
                     defaultValue={1}
                     min={1}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <div className="flex justify-end gap-2 pt-2 border-t border-zinc-100">
                 <button
                   type="button"
                   onClick={() => setShowBudgetModal(false)}
-                  className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900"
+                  className="px-3 py-1.5 text-xs text-zinc-600 hover:text-zinc-900"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={budgetLoading}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-zinc-950 hover:bg-orange-600 rounded-lg shadow-xs disabled:opacity-50"
                 >
                   {budgetLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>Simpan Item RAB</span>
@@ -1579,10 +1579,10 @@ export default function ProjectWorkspaceTabs({
 
       {/* Modal Tambah Luaran Riset */}
       {showOutputModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-sm font-bold text-slate-900 mb-1">Tambah Target Luaran Riset</h3>
-            <p className="text-xs text-slate-500 mb-4">
+        <div className="fixed inset-0 bg-zinc-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl border border-zinc-100 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-sm font-bold text-zinc-900 mb-1">Tambah Target Luaran Riset</h3>
+            <p className="text-xs text-zinc-500 mb-4">
               Daftarkan naskah publikasi, pendaftaran HKI, atau prototipe sistem.
             </p>
 
@@ -1594,11 +1594,11 @@ export default function ProjectWorkspaceTabs({
 
             <form onSubmit={handleCreateOutput} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Jenis Luaran</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Jenis Luaran</label>
                 <select
                   name="outputType"
                   defaultValue="scopus_journal"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white capitalize"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg bg-white capitalize"
                 >
                   <option value="scopus_journal">Jurnal Internasional Terindeks Scopus</option>
                   <option value="sinta_journal">Jurnal Nasional Terakreditasi SINTA</option>
@@ -1611,32 +1611,32 @@ export default function ProjectWorkspaceTabs({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Judul Luaran / Naskah</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Judul Luaran / Naskah</label>
                 <textarea
                   name="title"
                   required
                   rows={2}
                   placeholder="Judul artikel atau nama ciptaan perangkat lunak"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Target Outlet / Penyelenggara</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Target Outlet / Penyelenggara</label>
                 <input
                   name="targetOutlet"
                   placeholder="Contoh: IEEE Access (Q1) / Jurnal SISFO Sinta 2"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Status Awal</label>
+                  <label className="block text-xs font-semibold text-zinc-700 mb-1">Status Awal</label>
                   <select
                     name="status"
                     defaultValue="drafting"
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white capitalize"
+                    className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg bg-white capitalize"
                   >
                     <option value="drafting">Drafting</option>
                     <option value="submitted">Submitted</option>
@@ -1649,46 +1649,46 @@ export default function ProjectWorkspaceTabs({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Batas Waktu Revisi</label>
+                  <label className="block text-xs font-semibold text-zinc-700 mb-1">Batas Waktu Revisi</label>
                   <input
                     name="currentDeadline"
                     type="date"
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Nomor DOI / Registrasi (Opsional)</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Nomor DOI / Registrasi (Opsional)</label>
                 <input
                   name="doiOrRegNumber"
                   placeholder="10.1109/ACCESS.2026.xxx / EC002026xxx"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 font-mono"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600 font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Tautan Dokumen / Sertifikat (Opsional)</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Tautan Dokumen / Sertifikat (Opsional)</label>
                 <input
                   name="documentUrl"
                   type="url"
                   placeholder="https://doi.org/... atau https://drive.google.com/..."
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <div className="flex justify-end gap-2 pt-2 border-t border-zinc-100">
                 <button
                   type="button"
                   onClick={() => setShowOutputModal(false)}
-                  className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900"
+                  className="px-3 py-1.5 text-xs text-zinc-600 hover:text-zinc-900"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={outputLoading}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-zinc-950 hover:bg-orange-600 rounded-lg shadow-xs disabled:opacity-50"
                 >
                   {outputLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>Simpan Luaran</span>
@@ -1701,10 +1701,10 @@ export default function ProjectWorkspaceTabs({
 
       {/* Modal Tambah Aturan Pengingat */}
       {showRuleModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-100">
-            <h3 className="text-sm font-bold text-slate-900 mb-1">Tambah Aturan Pengingat Telegram</h3>
-            <p className="text-xs text-slate-500 mb-4">
+        <div className="fixed inset-0 bg-zinc-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl border border-zinc-100">
+            <h3 className="text-sm font-bold text-zinc-900 mb-1">Tambah Aturan Pengingat Telegram</h3>
+            <p className="text-xs text-zinc-500 mb-4">
               Konfigurasikan jadwal bot mengirim pengingat otomatis ke grup tim.
             </p>
 
@@ -1716,11 +1716,11 @@ export default function ProjectWorkspaceTabs({
 
             <form onSubmit={handleCreateRule} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Agenda yang Diingatkan</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Agenda yang Diingatkan</label>
                 <select
                   name="eventType"
                   defaultValue="interim_report"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg bg-white"
                 >
                   <option value="interim_report">Laporan Kemajuan / Monev</option>
                   <option value="final_report">Laporan Akhir Riset</option>
@@ -1731,11 +1731,11 @@ export default function ProjectWorkspaceTabs({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Pemicu Hari (H-minus)</label>
+                  <label className="block text-xs font-semibold text-zinc-700 mb-1">Pemicu Hari (H-minus)</label>
                   <select
                     name="triggerOffsetDays"
                     defaultValue="-7"
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white"
+                    className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg bg-white"
                   >
                     <option value="-30">H-30 (1 Bulan Sebelumnya)</option>
                     <option value="-14">H-14 (2 Minggu Sebelumnya)</option>
@@ -1747,22 +1747,22 @@ export default function ProjectWorkspaceTabs({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Waktu Kirim</label>
+                  <label className="block text-xs font-semibold text-zinc-700 mb-1">Waktu Kirim</label>
                   <input
                     name="dispatchTime"
                     type="time"
                     defaultValue="08:00"
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Saluran Pengiriman</label>
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">Saluran Pengiriman</label>
                 <select
                   name="targetChannel"
                   defaultValue="both"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg bg-white"
                 >
                   <option value="both">Grup Proyek & Personal Anggota</option>
                   <option value="group">Hanya Grup Proyek</option>
@@ -1770,18 +1770,18 @@ export default function ProjectWorkspaceTabs({
                 </select>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <div className="flex justify-end gap-2 pt-2 border-t border-zinc-100">
                 <button
                   type="button"
                   onClick={() => setShowRuleModal(false)}
-                  className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900"
+                  className="px-3 py-1.5 text-xs text-zinc-600 hover:text-zinc-900"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={ruleLoading}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-zinc-950 hover:bg-orange-600 rounded-lg shadow-xs disabled:opacity-50"
                 >
                   {ruleLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>Pasang Aturan</span>
@@ -1794,16 +1794,16 @@ export default function ProjectWorkspaceTabs({
 
       {/* MODAL TAMBAH ANGGOTA TIM */}
       {showMemberModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/50 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl border border-zinc-100">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-indigo-600" />
+              <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-orange-600" />
                 <span>Tambah Anggota ke Proyek Riset</span>
               </h3>
               <button
                 onClick={() => setShowMemberModal(false)}
-                className="text-slate-400 hover:text-slate-600 text-xs font-bold"
+                className="text-zinc-400 hover:text-zinc-600 text-xs font-bold"
               >
                 ✕
               </button>
@@ -1818,7 +1818,7 @@ export default function ProjectWorkspaceTabs({
 
             <form onSubmit={handleAddMember} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">
                   Email Pengguna Terdaftar *
                 </label>
                 <input
@@ -1826,21 +1826,21 @@ export default function ProjectWorkspaceTabs({
                   type="email"
                   required
                   placeholder="contoh: student.demo@simriset.ac.id"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-orange-600 focus:outline-none"
                 />
-                <p className="text-[10px] text-slate-400 mt-1">
+                <p className="text-[10px] text-zinc-400 mt-1">
                   Pengguna harus sudah terdaftar di sistem SIM-Riset.
                 </p>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-zinc-700 mb-1">
                   Peran dalam Proyek (Role) *
                 </label>
                 <select
                   name="role"
                   defaultValue="student_ra"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 text-xs border border-zinc-300 rounded-lg bg-white focus:ring-2 focus:ring-orange-600"
                 >
                   <option value="co_pi">Co-PI (Dosen Anggota Peneliti)</option>
                   <option value="student_ra">Student RA (Mahasiswa Asisten Peneliti / MBKM)</option>
@@ -1849,18 +1849,18 @@ export default function ProjectWorkspaceTabs({
                 </select>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+              <div className="flex justify-end gap-2 pt-3 border-t border-zinc-100">
                 <button
                   type="button"
                   onClick={() => setShowMemberModal(false)}
-                  className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900"
+                  className="px-3 py-1.5 text-xs text-zinc-600 hover:text-zinc-900"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={memberLoading}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-zinc-950 hover:bg-orange-600 rounded-lg shadow-xs disabled:opacity-50"
                 >
                   {memberLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>Tambahkan ke Tim</span>

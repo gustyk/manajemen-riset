@@ -8,7 +8,6 @@ import {
   Send,
   Loader2,
   CheckCircle2,
-  HelpCircle,
 } from 'lucide-react';
 
 interface EditProjectFormProps {
@@ -42,17 +41,17 @@ export default function EditProjectForm({ project }: EditProjectFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-5 font-sans">
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
-          <span className="font-semibold">Kesalahan:</span> {errorMessage}
+        <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-800">
+          <span className="font-bold">Kesalahan:</span> {errorMessage}
         </div>
       )}
 
       {/* Judul Riset */}
       <div>
-        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-          Judul Penelitian / Judul Hibah <span className="text-red-500">*</span>
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
+          Judul Penelitian / Hibah <span className="text-orange-600">*</span>
         </label>
         <textarea
           name="title"
@@ -60,34 +59,34 @@ export default function EditProjectForm({ project }: EditProjectFormProps) {
           required
           defaultValue={project.title}
           placeholder="Judul lengkap penelitian"
-          className="w-full px-4 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+          className="w-full px-3.5 py-2.5 text-xs border border-zinc-300 rounded-lg text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition-colors"
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Fokus Bidang SI */}
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Klaster / Bidang Fokus SI
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
+            Bidang Fokus / Klaster Riset
           </label>
           <input
             name="focusArea"
             type="text"
             defaultValue={project.focus_area}
-            className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full px-3.5 py-2 text-xs border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition-colors"
           />
         </div>
 
         {/* Skema Pendanaan */}
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Skema Pendanaan <span className="text-red-500">*</span>
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
+            Skema Pendanaan <span className="text-orange-600">*</span>
           </label>
           <select
             name="scheme"
             required
             defaultValue={project.scheme}
-            className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-white"
+            className="w-full px-3.5 py-2 text-xs border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition-colors bg-white font-mono"
           >
             <option value="kemdikbud_bima">Hibah Kemdikbudristek (BIMA)</option>
             <option value="brin">Hibah Riset BRIN</option>
@@ -99,57 +98,57 @@ export default function EditProjectForm({ project }: EditProjectFormProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Tahun Anggaran */}
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
             Tahun Anggaran
           </label>
           <input
             name="fiscalYear"
             type="number"
             defaultValue={project.fiscal_year}
-            className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full px-3.5 py-2 text-xs font-mono border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition-colors"
           />
         </div>
 
         {/* Tanggal Mulai */}
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Tanggal Mulai <span className="text-red-500">*</span>
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
+            Tanggal Mulai <span className="text-orange-600">*</span>
           </label>
           <input
             name="startDate"
             type="date"
             required
             defaultValue={project.start_date}
-            className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full px-3.5 py-2 text-xs font-mono border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition-colors"
           />
         </div>
 
         {/* Tanggal Selesai */}
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Tanggal Selesai / Deadline <span className="text-red-500">*</span>
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
+            Deadline Selesai <span className="text-orange-600">*</span>
           </label>
           <input
             name="endDate"
             type="date"
             required
             defaultValue={project.end_date}
-            className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            className="w-full px-3.5 py-2 text-xs font-mono border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition-colors"
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Total Anggaran */}
-        <div className="sm:col-span-1">
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Total Anggaran (Rp)
+        <div>
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
+            Alokasi Pagu (Rp)
           </label>
-          <div className="relative rounded-xl shadow-xs">
-            <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-xs font-bold text-slate-400">
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-xs font-mono font-bold text-zinc-500">
               Rp
             </span>
             <input
@@ -157,79 +156,78 @@ export default function EditProjectForm({ project }: EditProjectFormProps) {
               type="number"
               defaultValue={project.total_budget}
               step={500000}
-              className="w-full pl-11 pr-3 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+              className="w-full pl-10 pr-3.5 py-2 text-xs font-mono border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition-colors"
             />
           </div>
         </div>
 
         {/* Status Proyek */}
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
             Status Pelaksanaan
           </label>
           <select
             name="status"
             defaultValue={project.status}
-            className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-white capitalize"
+            className="w-full px-3.5 py-2 text-xs border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition-colors bg-white capitalize font-mono"
           >
             <option value="draft">Draft</option>
             <option value="submitted">Submitted</option>
             <option value="funded">Funded / Didanai</option>
-            <option value="completed">Completed</option>
+            <option value="completed">Completed / Selesai</option>
             <option value="archived">Archived</option>
           </select>
         </div>
 
         {/* Telegram Group ID */}
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center justify-between">
-            <span>Chat ID Grup Telegram</span>
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
+            Chat ID Grup Telegram
           </label>
           <input
             name="telegramGroupId"
             type="text"
             defaultValue={project.telegram_group_id || ''}
-            placeholder="Contoh: -1001234567890"
-            className="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-mono"
+            placeholder="-1001234567890"
+            className="w-full px-3.5 py-2 text-xs font-mono border border-zinc-300 rounded-lg text-zinc-900 focus:outline-none focus:border-orange-600 focus:ring-1 focus:ring-orange-600 transition-colors"
           />
         </div>
       </div>
 
       {/* Panduan Chat ID Grup Telegram */}
-      <div className="p-4 rounded-xl bg-sky-50 border border-sky-100 flex items-start gap-3 text-xs text-sky-950">
-        <Send className="w-5 h-5 text-sky-600 shrink-0 mt-0.5" />
+      <div className="p-4 rounded-lg bg-zinc-950 border border-zinc-800 flex items-start gap-3 text-xs text-zinc-300">
+        <Send className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
         <div className="space-y-1">
-          <p className="font-bold text-sky-900">Petunjuk Mengetahui Chat ID Grup Telegram:</p>
-          <p className="text-sky-800 leading-relaxed">
-            1. Tambahkan bot <span className="font-semibold text-indigo-700">@SimRisetReminderBot</span> ke grup riset Anda.<br />
-            2. Jadikan bot sebagai Administrator (minimal hak kirim pesan).<br />
-            3. Tambahkan bot pembantu seperti <code>@RawDataBot</code> atau <code>@userinfobot</code> ke grup tersebut untuk melihat ID grup (biasanya berupa angka minus panjang, contoh: <strong>-1002345678901</strong>).<br />
-            4. Salin angka tersebut lengkap dengan tanda minus (-) ke kolom Chat ID di atas.
+          <p className="font-bold text-white text-[11px]">Petunjuk Sinkronisasi Grup Telegram:</p>
+          <p className="text-zinc-400 leading-relaxed text-[11px]">
+            1. Tambahkan bot <span className="font-mono text-orange-400 font-semibold">@SimRisetReminderBot</span> ke grup riset Anda.<br />
+            2. Berikan izin kirim pesan bagi bot.<br />
+            3. Dapatkan chat ID grup (biasanya diawali tanda minus (-), contoh: <code>-1002345678901</code>) lalu masukkan di atas.
           </p>
         </div>
       </div>
 
       {/* Action Buttons */}
-      <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+      <div className="pt-4 flex items-center justify-end gap-3 border-t border-zinc-200">
         <Link
           href={`/projects/${project.id}`}
-          className="px-5 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+          className="px-4 py-2 text-xs font-bold text-zinc-600 hover:text-zinc-950 transition-colors"
         >
           Batal
         </Link>
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-indigo-100 transition-all disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-zinc-950 hover:bg-orange-600 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50 shadow-xs cursor-pointer"
         >
           {loading ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
               <span>Menyimpan Perubahan...</span>
             </>
           ) : (
             <>
-              <CheckCircle2 className="w-4 h-4" />
+              <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Simpan Perubahan</span>
             </>
           )}
