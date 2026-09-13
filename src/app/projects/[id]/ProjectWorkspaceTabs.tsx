@@ -308,9 +308,22 @@ export default function ProjectWorkspaceTabs({
                           NIDN/NIM: {m.profile?.nidn_nim || '-'}
                         </p>
                       </div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">
-                        {m.role.replace('_', ' ')}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">
+                          {m.role.replace(/_/g, ' ')}
+                        </span>
+                        {m.role === 'student_ra' && (
+                          <Link
+                            href={`/projects/${projectId}/student/${m.user_id}`}
+                            target="_blank"
+                            className="text-[10px] font-bold text-indigo-600 hover:underline inline-flex items-center gap-0.5"
+                            title="Cetak Portofolio & Surat Konversi MBKM/Skripsi"
+                          >
+                            <span>Portofolio</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -630,13 +643,14 @@ export default function ProjectWorkspaceTabs({
               <div className="flex items-center gap-2">
                 {budgetTab === 'expenses' ? (
                   <>
-                    <button
-                      onClick={() => window.print()}
+                    <Link
+                      href={`/projects/${projectId}/spj/print`}
+                      target="_blank"
                       className="inline-flex items-center gap-1.5 px-3 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl transition-colors"
                     >
                       <Printer className="w-3.5 h-3.5" />
                       <span>Cetak Format SPJ</span>
-                    </button>
+                    </Link>
                     <button
                       onClick={() => setShowExpenseModal(true)}
                       className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors"
