@@ -19,15 +19,54 @@ export async function sendTelegramMessage(
 
   const endpoint = `https://api.telegram.org/bot${token}/sendMessage`;
 
+  let processedMessage = message;
+  const validButtons: InlineKeyboardButton[][] = [];
+
+  // Telegram API menolak URL yang mengandung localhost atau IP lokal di inline_keyboard.
+  // Jika dalam lingkungan development (localhost), kita pindahkan link ke dalam isi teks pesan Markdown.
+  if (buttons && buttons.length > 0) {
+    const localhostLinks: { text: string; url: string }[] = [];
+
+    buttons.forEach((row) => {
+      const validRow: InlineKeyboardButton[] = [];
+      row.forEach((btn) => {
+        if (btn.url) {
+          const isLocalhost =
+            btn.url.includes('localhost') ||
+            btn.url.includes('127.0.0.1') ||
+            btn.url.startsWith('http://0.0.0.0');
+
+          if (isLocalhost) {
+            localhostLinks.push({ text: btn.text, url: btn.url });
+          } else {
+            validRow.push(btn);
+          }
+        } else {
+          validRow.push(btn);
+        }
+      });
+      if (validRow.length > 0) {
+        validButtons.push(validRow);
+      }
+    });
+
+    if (localhostLinks.length > 0) {
+      processedMessage += '\n\n*Tautan Akses:*';
+      localhostLinks.forEach((link) => {
+        processedMessage += `\n• ${link.text}: ${link.url}`;
+      });
+    }
+  }
+
   const payload: Record<string, any> = {
     chat_id: chatId,
-    text: message,
+    text: processedMessage,
     parse_mode: 'Markdown',
   };
 
-  if (buttons && buttons.length > 0) {
+  if (validButtons.length > 0) {
     payload.reply_markup = {
-      inline_keyboard: buttons,
+      inline_keyboard: validButtons,
     };
   }
 
