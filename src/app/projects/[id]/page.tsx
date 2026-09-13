@@ -90,6 +90,13 @@ export default async function ProjectDetailPage({
     .eq('project_id', id)
     .order('trigger_offset_days', { ascending: true });
 
+  // 8. Ambil luaran riset & publikasi
+  const { data: outputs } = await supabase
+    .from('research_outputs')
+    .select('*')
+    .eq('project_id', id)
+    .order('created_at', { ascending: false });
+
   // Periksa apakah user ini adalah PI atau Dosen
   const isPI = project.created_by === user?.id;
 
@@ -192,6 +199,7 @@ export default async function ProjectDetailPage({
         budgetItems={budgetItems || []}
         expenses={expenses || []}
         notificationRules={notificationRules || []}
+        outputs={outputs || []}
       />
     </DashboardLayout>
   );

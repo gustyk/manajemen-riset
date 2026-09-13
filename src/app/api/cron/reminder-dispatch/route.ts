@@ -26,65 +26,163 @@ export async function POST(req: NextRequest) {
 
     const logs: any[] = [];
     const today = new Date().toISOString().split('T')[0];
+    const todayDate = new Date(today);
 
-    // 3. Evaluasi setiap aturan pengingat terhadap entitas target
+    // 3. Evaluasi setiap aturan pengingat
     for (const rule of rules || []) {
       const project = rule.projects;
-      if (!project) continue;
+      if (!project || !project.telegram_group_id) continue;
 
-      let targetDateStr: string | null = null;
-      let eventTitle = '';
+      const offsetDays = Math.abs(rule.trigger_offset_days);
 
+      // Event A: Laporan Kemajuan & Akhir
       if (rule.event_type === 'interim_report' || rule.event_type === 'final_report') {
-        targetDateStr = project.end_date;
-        eventTitle = rule.event_type === 'interim_report' ? 'Laporan Kemajuan / Monev' : 'Laporan Akhir Riset';
+        const targetDateStr = project.end_date;
+        if (targetDateStr) {
+          const targetDate = new Date(targetDateStr);
+          const diffDays = Math.ceil((targetDate.getTime() - todayDate.getTime()) / (1000 * 3600 * 24));
+
+          if (diffDays === offsetDays) {
+            const idempotencyKey = `${rule.id}_${project.id}_${today}`;
+            const { data: existingLog } = await supabase
+              .from('notification_logs')
+              .select('id')
+              .eq('idempotency_key', idempotencyKey)
+              .maybeSingle();
+
+            if (!existingLog) {
+              const eventTitle =
+                rule.event_type === 'interim_report' ? 'Laporan Kemajuan / Monev' : 'Laporan Akhir Riset';
+
+              const message =
+                `🔔 *PENGINGAT DEADLINE RISET*\n\n` +
+                `*Proyek:* ${project.title}\n` +
+                `*Agenda:* ${eventTitle}\n` +
+                `*Batas Waktu:* ${targetDateStr} (${diffDays} hari lagi)\n\n` +
+                `Harap segera melengkapi dokumen dan mengunggahnya ke sistem.`;
+
+              const buttons = [
+                [{ text: '🔗 Buka Dasbor Proyek', url: `${process.env.NEXT_PUBLIC_APP_URL}/projects/${project.id}` }],
+              ];
+
+              const sendResult = await sendTelegramMessage(project.telegram_group_id, message, buttons);
+
+              await supabase.from('notification_logs').insert({
+                rule_id: rule.id,
+                project_id: project.id,
+                recipient_chat_id: project.telegram_group_id,
+                message_content: message,
+                is_successful: sendResult.success,
+                idempotency_key: idempotencyKey,
+              });
+
+              logs.push({ type: 'project_deadline', projectId: project.id, success: sendResult.success });
+            }
+          }
+        }
       }
 
-      if (targetDateStr) {
-        const targetDate = new Date(targetDateStr);
-        const todayDate = new Date(today);
-        const diffDays = Math.ceil((targetDate.getTime() - todayDate.getTime()) / (1000 * 3600 * 24));
+      // Event B: Batas Waktu Tugas / Milestone (Task Deadline)
+      if (rule.event_type === 'task_deadline') {
+        const { data: upcomingTasks } = await supabase
+          .from('tasks')
+          .select('id, title, due_date, status, assigned_profile:assigned_to(full_name)')
+          .eq('project_id', project.id)
+          .neq('status', 'done')
+          .not('due_date', 'is', null);
 
-        // Jika selisih hari cocok dengan trigger_offset_days (contoh: 7 hari sebelum deadline)
-        if (diffDays === Math.abs(rule.trigger_offset_days)) {
-          const idempotencyKey = `${rule.id}_${project.id}_${today}`;
+        for (const task of upcomingTasks || []) {
+          const taskDate = new Date(task.due_date.split('T')[0]);
+          const diffDays = Math.ceil((taskDate.getTime() - todayDate.getTime()) / (1000 * 3600 * 24));
 
-          // Cek apakah sudah pernah terkirim hari ini
-          const { data: existingLog } = await supabase
-            .from('notification_logs')
-            .select('id')
-            .eq('idempotency_key', idempotencyKey)
-            .maybeSingle();
+          if (diffDays === offsetDays) {
+            const idempotencyKey = `task_${task.id}_${today}`;
+            const { data: existingLog } = await supabase
+              .from('notification_logs')
+              .select('id')
+              .eq('idempotency_key', idempotencyKey)
+              .maybeSingle();
 
-          if (!existingLog && project.telegram_group_id) {
-            const message = `🔔 *PENGINGAT DEADLINE RISET*\n\n` +
-              `*Proyek:* ${project.title}\n` +
-              `*Agenda:* ${eventTitle}\n` +
-              `*Batas Waktu:* ${targetDateStr} (${diffDays} hari lagi)\n\n` +
-              `Harap segera melengkapi dokumen dan mengunggahnya ke sistem.`;
+            if (!existingLog) {
+              const picName = Array.isArray(task.assigned_profile)
+                ? (task.assigned_profile[0] as any)?.full_name
+                : (task.assigned_profile as any)?.full_name || 'Tim';
 
-            const buttons = [
-              [{ text: '🔗 Buka Dasbor Proyek', url: `${process.env.NEXT_PUBLIC_APP_URL}/projects/${project.id}` }]
-            ];
+              const message =
+                `⏰ *PENGINGAT TUGAS RISET*\n\n` +
+                `*Proyek:* ${project.title}\n` +
+                `*Tugas:* ${task.title}\n` +
+                `*PIC:* ${picName}\n` +
+                `*Jatuh Tempo:* ${task.due_date.split('T')[0]} (${diffDays} hari lagi)`;
 
-            const sendResult = await sendTelegramMessage(project.telegram_group_id, message, buttons);
+              const sendResult = await sendTelegramMessage(project.telegram_group_id, message);
 
-            await supabase.from('notification_logs').insert({
-              rule_id: rule.id,
-              project_id: project.id,
-              recipient_chat_id: project.telegram_group_id,
-              message_content: message,
-              is_successful: sendResult.success,
-              idempotency_key: idempotencyKey,
-            });
+              await supabase.from('notification_logs').insert({
+                rule_id: rule.id,
+                project_id: project.id,
+                recipient_chat_id: project.telegram_group_id,
+                message_content: message,
+                is_successful: sendResult.success,
+                idempotency_key: idempotencyKey,
+              });
 
-            logs.push({ projectId: project.id, event: eventTitle, success: sendResult.success });
+              logs.push({ type: 'task_deadline', taskId: task.id, success: sendResult.success });
+            }
+          }
+        }
+      }
+
+      // Event C: Batas Waktu Revisi Jurnal / Luaran Riset
+      if (rule.event_type === 'journal_revision') {
+        const { data: outputs } = await supabase
+          .from('research_outputs')
+          .select('id, title, target_outlet, current_deadline')
+          .eq('project_id', project.id)
+          .not('current_deadline', 'is', null);
+
+        for (const out of outputs || []) {
+          const deadlineDate = new Date(out.current_deadline);
+          const diffDays = Math.ceil((deadlineDate.getTime() - todayDate.getTime()) / (1000 * 3600 * 24));
+
+          if (diffDays === offsetDays) {
+            const idempotencyKey = `output_${out.id}_${today}`;
+            const { data: existingLog } = await supabase
+              .from('notification_logs')
+              .select('id')
+              .eq('idempotency_key', idempotencyKey)
+              .maybeSingle();
+
+            if (!existingLog) {
+              const message =
+                `📄 *PENGINGAT REVISI PUBLIKASI / HKI*\n\n` +
+                `*Proyek:* ${project.title}\n` +
+                `*Naskah:* ${out.title}\n` +
+                `*Target:* ${out.target_outlet || 'Jurnal / Konferensi'}\n` +
+                `*Batas Waktu:* ${out.current_deadline} (${diffDays} hari lagi)`;
+
+              const sendResult = await sendTelegramMessage(project.telegram_group_id, message);
+
+              await supabase.from('notification_logs').insert({
+                rule_id: rule.id,
+                project_id: project.id,
+                recipient_chat_id: project.telegram_group_id,
+                message_content: message,
+                is_successful: sendResult.success,
+                idempotency_key: idempotencyKey,
+              });
+
+              logs.push({ type: 'journal_revision', outputId: out.id, success: sendResult.success });
+            }
           }
         }
       }
     }
 
-    return NextResponse.json({ message: 'Evaluasi pengingat selesai', dispatched: logs.length, logs });
+    return NextResponse.json({
+      message: 'Evaluasi pengingat harian berhasil dieksekusi',
+      dispatched: logs.length,
+      logs,
+    });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

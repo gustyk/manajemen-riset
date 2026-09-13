@@ -12,6 +12,12 @@ import {
   deleteBudgetItem,
   createExpense,
   deleteExpense,
+  createNotificationRule,
+  deleteNotificationRule,
+  toggleNotificationRule,
+  createResearchOutput,
+  deleteResearchOutput,
+  updateResearchOutputStatus,
 } from './actions';
 import { updateTelegramGroupId } from '@/app/projects/actions';
 import {
@@ -35,6 +41,8 @@ import {
   Trash2,
   Printer,
   PieChart,
+  Award,
+  Sparkles,
 } from 'lucide-react';
 
 interface ProjectWorkspaceTabsProps {
@@ -48,6 +56,7 @@ interface ProjectWorkspaceTabsProps {
   budgetItems: any[];
   expenses: any[];
   notificationRules: any[];
+  outputs: any[];
 }
 
 export default function ProjectWorkspaceTabs({
@@ -61,6 +70,7 @@ export default function ProjectWorkspaceTabs({
   budgetItems,
   expenses,
   notificationRules,
+  outputs,
 }: ProjectWorkspaceTabsProps) {
   const [activeTab, setActiveTab] = useState(currentTab || 'overview');
   const [loading, setLoading] = useState(false);
@@ -183,11 +193,60 @@ export default function ProjectWorkspaceTabs({
     setShowLogbookModal(false);
   }
 
+  // State untuk Luaran Riset & Aturan Pengingat
+  const [showOutputModal, setShowOutputModal] = useState(false);
+  const [showRuleModal, setShowRuleModal] = useState(false);
+  const [outputLoading, setOutputLoading] = useState(false);
+  const [ruleLoading, setRuleLoading] = useState(false);
+  const [outputError, setOutputError] = useState<string | null>(null);
+  const [ruleError, setRuleError] = useState<string | null>(null);
+
+  async function handleCreateOutput(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setOutputLoading(true);
+    setOutputError(null);
+    const formData = new FormData(e.currentTarget);
+    formData.append('projectId', projectId);
+    try {
+      const res = await createResearchOutput(formData);
+      if (res?.error) {
+        setOutputError(res.error);
+      } else {
+        setShowOutputModal(false);
+      }
+    } catch (err: any) {
+      setOutputError(err.message || 'Gagal menyimpan luaran riset');
+    } finally {
+      setOutputLoading(false);
+    }
+  }
+
+  async function handleCreateRule(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setRuleLoading(true);
+    setRuleError(null);
+    const formData = new FormData(e.currentTarget);
+    formData.append('projectId', projectId);
+    try {
+      const res = await createNotificationRule(formData);
+      if (res?.error) {
+        setRuleError(res.error);
+      } else {
+        setShowRuleModal(false);
+      }
+    } catch (err: any) {
+      setRuleError(err.message || 'Gagal menyimpan aturan pengingat');
+    } finally {
+      setRuleLoading(false);
+    }
+  }
+
   const tabs = [
     { id: 'overview', label: 'Ringkasan & Tim', icon: LayoutDashboard },
     { id: 'tasks', label: `Tugas & WBS (${tasks.length})`, icon: CheckSquare },
     { id: 'logbooks', label: `Logbook Mahasiswa (${logbooks.length})`, icon: BookOpen },
     { id: 'expenses', label: `Keuangan & SPJ (${expenses.length})`, icon: Receipt },
+    { id: 'outputs', label: `Publikasi & HKI (${outputs.length})`, icon: Award },
     { id: 'telegram', label: `Pengingat Telegram (${notificationRules.length})`, icon: Bell },
   ];
 
@@ -732,6 +791,109 @@ export default function ProjectWorkspaceTabs({
           </div>
         )}
 
+        {/* TAB: RESEARCH OUTPUTS */}
+        {activeTab === 'outputs' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Luaran Riset, Publikasi & HKI</h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Pelacakan siklus hidup manuskrip jurnal, pendaftaran hak cipta software, dan prototipe sistem.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowOutputModal(true)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors self-start sm:self-auto"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Tambah Luaran Riset</span>
+              </button>
+            </div>
+
+            {outputs.length === 0 ? (
+              <div className="p-8 text-center border border-dashed border-slate-200 rounded-xl">
+                <Award className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                <p className="text-xs font-semibold text-slate-600">Belum ada luaran riset terdaftar</p>
+                <p className="text-[11px] text-slate-400 mt-1">
+                  Daftarkan target jurnal ilmiah, konferensi, atau hak cipta program untuk memonitor tahapan review.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {outputs.map((out) => (
+                  <div
+                    key={out.id}
+                    className="p-5 rounded-xl border border-slate-200 bg-white hover:border-indigo-200 shadow-2xs space-y-3 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
+                          {out.output_type.replace(/_/g, ' ')}
+                        </span>
+                        <select
+                          value={out.status}
+                          onChange={(e) => updateResearchOutputStatus(out.id, projectId, e.target.value)}
+                          className="text-[11px] font-bold uppercase px-2 py-0.5 rounded border border-slate-200 bg-slate-50 text-slate-700"
+                        >
+                          <option value="drafting">Drafting</option>
+                          <option value="submitted">Submitted</option>
+                          <option value="under_review">Under Review</option>
+                          <option value="revision">Revision</option>
+                          <option value="accepted">Accepted</option>
+                          <option value="published">Published</option>
+                          <option value="granted">Granted (HKI)</option>
+                        </select>
+                      </div>
+
+                      <h4 className="text-xs font-bold text-slate-900 leading-snug">{out.title}</h4>
+                      <p className="text-xs text-slate-500 mt-1">
+                        Target: <span className="font-semibold text-slate-700">{out.target_outlet || '-'}</span>
+                      </p>
+
+                      {out.current_deadline && (
+                        <p className="text-[11px] text-amber-700 mt-1 flex items-center gap-1 font-medium">
+                          <Clock className="w-3 h-3 text-amber-500" />
+                          <span>Batas Waktu Revisi: {out.current_deadline}</span>
+                        </p>
+                      )}
+
+                      {out.doi_or_reg_number && (
+                        <p className="text-[11px] text-indigo-600 font-mono mt-1">
+                          DOI / No. Reg: {out.doi_or_reg_number}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                      {out.document_url ? (
+                        <a
+                          href={out.document_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-indigo-600 hover:underline inline-flex items-center gap-1 font-semibold"
+                        >
+                          <span>Unduh / Buka Dokumen</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      ) : (
+                        <span className="text-slate-400">Belum ada file terlampir</span>
+                      )}
+
+                      <button
+                        onClick={() => deleteResearchOutput(out.id, projectId)}
+                        className="text-slate-400 hover:text-red-600 transition-colors p-1"
+                        title="Hapus Luaran"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* TAB 5: TELEGRAM REMINDERS */}
         {activeTab === 'telegram' && (
           <div className="space-y-6">
@@ -861,9 +1023,19 @@ export default function ProjectWorkspaceTabs({
             )}
 
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-                Aturan Pengingat Otomatis Aktif (Rules Engine)
-              </h4>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  Aturan Pengingat Otomatis Aktif (Rules Engine)
+                </h4>
+                <button
+                  onClick={() => setShowRuleModal(true)}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Tambah Aturan</span>
+                </button>
+              </div>
+
               <div className="border border-slate-200 rounded-xl overflow-hidden">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider">
@@ -872,6 +1044,7 @@ export default function ProjectWorkspaceTabs({
                       <th className="px-4 py-3">Pemicu Waktu</th>
                       <th className="px-4 py-3">Waktu Eksekusi</th>
                       <th className="px-4 py-3">Status</th>
+                      <th className="px-4 py-3 text-center">Aksi</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -882,6 +1055,10 @@ export default function ProjectWorkspaceTabs({
                             ? 'Laporan Kemajuan / Monev'
                             : rule.event_type === 'final_report'
                             ? 'Laporan Akhir Riset'
+                            : rule.event_type === 'task_deadline'
+                            ? 'Batas Waktu Tugas (Task)'
+                            : rule.event_type === 'journal_revision'
+                            ? 'Batas Revisi Jurnal / Luaran'
                             : rule.event_type}
                         </td>
                         <td className="px-4 py-3 text-slate-600">
@@ -891,9 +1068,25 @@ export default function ProjectWorkspaceTabs({
                           {rule.dispatch_time} WIB
                         </td>
                         <td className="px-4 py-3">
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                            AKTIF
-                          </span>
+                          <button
+                            onClick={() => toggleNotificationRule(rule.id, projectId, !rule.is_active)}
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                              rule.is_active
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : 'bg-slate-100 text-slate-500'
+                            }`}
+                          >
+                            {rule.is_active ? 'AKTIF' : 'NONAKTIF'}
+                          </button>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <button
+                            onClick={() => deleteNotificationRule(rule.id, projectId)}
+                            className="p-1 text-slate-400 hover:text-red-600 transition-colors"
+                            title="Hapus Aturan"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -1240,6 +1433,221 @@ export default function ProjectWorkspaceTabs({
                 >
                   {budgetLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>Simpan Item RAB</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Tambah Luaran Riset */}
+      {showOutputModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-sm font-bold text-slate-900 mb-1">Tambah Target Luaran Riset</h3>
+            <p className="text-xs text-slate-500 mb-4">
+              Daftarkan naskah publikasi, pendaftaran HKI, atau prototipe sistem.
+            </p>
+
+            {outputError && (
+              <div className="mb-4 p-3 rounded-xl bg-red-50 text-xs text-red-700">
+                {outputError}
+              </div>
+            )}
+
+            <form onSubmit={handleCreateOutput} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Jenis Luaran</label>
+                <select
+                  name="outputType"
+                  defaultValue="scopus_journal"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white capitalize"
+                >
+                  <option value="scopus_journal">Jurnal Internasional Terindeks Scopus</option>
+                  <option value="sinta_journal">Jurnal Nasional Terakreditasi SINTA</option>
+                  <option value="conference_paper">Prosiding Konferensi Internasional</option>
+                  <option value="hki_copyright">Hak Cipta (Source Code / Modul)</option>
+                  <option value="patent">Paten / Paten Sederhana</option>
+                  <option value="software_prototype">Prototipe Perangkat Lunak</option>
+                  <option value="book">Buku Ajar / Monograf</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Judul Luaran / Naskah</label>
+                <textarea
+                  name="title"
+                  required
+                  rows={2}
+                  placeholder="Judul artikel atau nama ciptaan perangkat lunak"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Target Outlet / Penyelenggara</label>
+                <input
+                  name="targetOutlet"
+                  placeholder="Contoh: IEEE Access (Q1) / Jurnal SISFO Sinta 2"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Status Awal</label>
+                  <select
+                    name="status"
+                    defaultValue="drafting"
+                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white capitalize"
+                  >
+                    <option value="drafting">Drafting</option>
+                    <option value="submitted">Submitted</option>
+                    <option value="under_review">Under Review</option>
+                    <option value="revision">Revision Required</option>
+                    <option value="accepted">Accepted</option>
+                    <option value="published">Published</option>
+                    <option value="granted">Granted (HKI)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Batas Waktu Revisi</label>
+                  <input
+                    name="currentDeadline"
+                    type="date"
+                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Nomor DOI / Registrasi (Opsional)</label>
+                <input
+                  name="doiOrRegNumber"
+                  placeholder="10.1109/ACCESS.2026.xxx / EC002026xxx"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Tautan Dokumen / Sertifikat (Opsional)</label>
+                <input
+                  name="documentUrl"
+                  type="url"
+                  placeholder="https://doi.org/... atau https://drive.google.com/..."
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowOutputModal(false)}
+                  className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={outputLoading}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs disabled:opacity-50"
+                >
+                  {outputLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  <span>Simpan Luaran</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Tambah Aturan Pengingat */}
+      {showRuleModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-100">
+            <h3 className="text-sm font-bold text-slate-900 mb-1">Tambah Aturan Pengingat Telegram</h3>
+            <p className="text-xs text-slate-500 mb-4">
+              Konfigurasikan jadwal bot mengirim pengingat otomatis ke grup tim.
+            </p>
+
+            {ruleError && (
+              <div className="mb-4 p-3 rounded-xl bg-red-50 text-xs text-red-700">
+                {ruleError}
+              </div>
+            )}
+
+            <form onSubmit={handleCreateRule} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Agenda yang Diingatkan</label>
+                <select
+                  name="eventType"
+                  defaultValue="interim_report"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white"
+                >
+                  <option value="interim_report">Laporan Kemajuan / Monev</option>
+                  <option value="final_report">Laporan Akhir Riset</option>
+                  <option value="task_deadline">Batas Waktu Tugas (Task/WBS)</option>
+                  <option value="journal_revision">Batas Waktu Revisi Jurnal / Luaran</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Pemicu Hari (H-minus)</label>
+                  <select
+                    name="triggerOffsetDays"
+                    defaultValue="-7"
+                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white"
+                  >
+                    <option value="-30">H-30 (1 Bulan Sebelumnya)</option>
+                    <option value="-14">H-14 (2 Minggu Sebelumnya)</option>
+                    <option value="-7">H-7 (1 Minggu Sebelumnya)</option>
+                    <option value="-3">H-3 (3 Hari Sebelumnya)</option>
+                    <option value="-1">H-1 (1 Hari Sebelumnya)</option>
+                    <option value="0">H-0 (Hari-H)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Waktu Kirim</label>
+                  <input
+                    name="dispatchTime"
+                    type="time"
+                    defaultValue="08:00"
+                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Saluran Pengiriman</label>
+                <select
+                  name="targetChannel"
+                  defaultValue="both"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white"
+                >
+                  <option value="both">Grup Proyek & Personal Anggota</option>
+                  <option value="group">Hanya Grup Proyek</option>
+                  <option value="personal">Hanya Chat Personal</option>
+                </select>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowRuleModal(false)}
+                  className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={ruleLoading}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs disabled:opacity-50"
+                >
+                  {ruleLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  <span>Pasang Aturan</span>
                 </button>
               </div>
             </form>

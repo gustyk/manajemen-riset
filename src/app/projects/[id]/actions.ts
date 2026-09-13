@@ -286,3 +286,109 @@ export async function deleteExpense(expenseId: string, projectId: string) {
   revalidatePath('/expenses');
   return { success: true };
 }
+
+// 11. Tambah Aturan Pengingat Telegram Baru
+export async function createNotificationRule(formData: FormData) {
+  const supabase = await createClient();
+  const projectId = formData.get('projectId') as string;
+  const eventType = formData.get('eventType') as string;
+  const triggerOffsetDays = parseInt(formData.get('triggerOffsetDays') as string, 10);
+  const dispatchTime = (formData.get('dispatchTime') as string) || '08:00:00';
+  const targetChannel = (formData.get('targetChannel') as string) || 'both';
+
+  if (!projectId || !eventType || isNaN(triggerOffsetDays)) {
+    return { error: 'Semua kolom aturan pengingat wajib diisi.' };
+  }
+
+  const { error } = await supabase.from('notification_rules').insert({
+    project_id: projectId,
+    event_type: eventType,
+    trigger_offset_days: triggerOffsetDays,
+    dispatch_time: dispatchTime,
+    target_channel: targetChannel,
+    is_active: true,
+  });
+
+  if (error) return { error: error.message };
+  revalidatePath(`/projects/${projectId}`);
+  return { success: true };
+}
+
+// 12. Hapus Aturan Pengingat
+export async function deleteNotificationRule(ruleId: string, projectId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from('notification_rules').delete().eq('id', ruleId);
+  if (error) return { error: error.message };
+  revalidatePath(`/projects/${projectId}`);
+  return { success: true };
+}
+
+// 13. Aktif/Nonaktifkan Aturan Pengingat
+export async function toggleNotificationRule(ruleId: string, projectId: string, isActive: boolean) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('notification_rules')
+    .update({ is_active: isActive })
+    .eq('id', ruleId);
+
+  if (error) return { error: error.message };
+  revalidatePath(`/projects/${projectId}`);
+  return { success: true };
+}
+
+// 14. Tambah Luaran Riset (Publikasi, HKI, Prototipe)
+export async function createResearchOutput(formData: FormData) {
+  const supabase = await createClient();
+  const projectId = formData.get('projectId') as string;
+  const outputType = formData.get('outputType') as string;
+  const title = formData.get('title') as string;
+  const targetOutlet = formData.get('targetOutlet') as string;
+  const status = (formData.get('status') as string) || 'drafting';
+  const currentDeadline = (formData.get('currentDeadline') as string) || null;
+  const doiOrRegNumber = (formData.get('doiOrRegNumber') as string) || null;
+  const documentUrl = (formData.get('documentUrl') as string) || null;
+
+  if (!projectId || !outputType || !title) {
+    return { error: 'Jenis luaran dan judul naskah/luaran wajib diisi.' };
+  }
+
+  const { error } = await supabase.from('research_outputs').insert({
+    project_id: projectId,
+    output_type: outputType,
+    title,
+    target_outlet: targetOutlet || null,
+    status,
+    current_deadline: currentDeadline || null,
+    doi_or_reg_number: doiOrRegNumber,
+    document_url: documentUrl,
+  });
+
+  if (error) return { error: error.message };
+  revalidatePath(`/projects/${projectId}`);
+  revalidatePath('/outputs');
+  return { success: true };
+}
+
+// 15. Hapus Luaran Riset
+export async function deleteResearchOutput(outputId: string, projectId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from('research_outputs').delete().eq('id', outputId);
+  if (error) return { error: error.message };
+  revalidatePath(`/projects/${projectId}`);
+  revalidatePath('/outputs');
+  return { success: true };
+}
+
+// 16. Update Status Luaran Riset
+export async function updateResearchOutputStatus(outputId: string, projectId: string, status: string) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('research_outputs')
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq('id', outputId);
+
+  if (error) return { error: error.message };
+  revalidatePath(`/projects/${projectId}`);
+  revalidatePath('/outputs');
+  return { success: true };
+}
