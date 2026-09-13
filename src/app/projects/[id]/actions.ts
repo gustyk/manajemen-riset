@@ -174,3 +174,115 @@ export async function testTelegramPing(projectId: string) {
 
   return { success: true };
 }
+
+// 7. Tambah Item Rencana Anggaran (RAB)
+export async function createBudgetItem(formData: FormData) {
+  const supabase = await createClient();
+  const projectId = formData.get('projectId') as string;
+  const category = formData.get('category') as string;
+  const description = formData.get('description') as string;
+  const unitPrice = parseFloat(formData.get('unitPrice') as string) || 0;
+  const quantity = parseInt(formData.get('quantity') as string, 10) || 1;
+
+  if (!projectId || !category || !description || unitPrice <= 0) {
+    return { error: 'Kategori, uraian, dan harga satuan wajib diisi.' };
+  }
+
+  const { error } = await supabase.from('budget_items').insert({
+    project_id: projectId,
+    category,
+    description,
+    unit_price: unitPrice,
+    quantity,
+  });
+
+  if (error) return { error: error.message };
+
+  revalidatePath(`/projects/${projectId}`);
+  return { success: true };
+}
+
+// 8. Hapus Item RAB
+export async function deleteBudgetItem(itemId: string, projectId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from('budget_items').delete().eq('id', itemId);
+  if (error) return { error: error.message };
+  revalidatePath(`/projects/${projectId}`);
+  return { success: true };
+}
+
+// 9. Catat Realisasi Belanja & Upload Kuitansi ke Cloudinary
+export async function createExpense(formData: FormData) {
+  const { uploadToCloudinary } = await import('@/lib/cloudinary/upload');
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return { error: 'Harus login terlebih dahulu.' };
+
+  const projectId = formData.get('projectId') as string;
+  const budgetItemId = (formData.get('budgetItemId') as string) || null;
+  const expenseDate = formData.get('expenseDate') as string;
+  const description = formData.get('description') as string;
+  const grossAmount = parseFloat(formData.get('grossAmount') as string) || 0;
+  const taxType = (formData.get('taxType') as string) || 'none';
+  const customTaxAmountRaw = formData.get('taxAmount') as string;
+  const receiptFile = formData.get('receiptFile') as File | null;
+
+  if (!projectId || !expenseDate || !description || grossAmount <= 0) {
+    return { error: 'Tanggal, uraian belanja, dan nominal bruto wajib diisi.' };
+  }
+
+  if (!receiptFile || receiptFile.size === 0) {
+    return { error: 'Bukti foto kuitansi/nota wajib diunggah.' };
+  }
+
+  // Hitung estimasi pajak otomatis jika tidak dispesifikasikan manual
+  let calculatedTax = 0;
+  if (customTaxAmountRaw && customTaxAmountRaw.trim() !== '') {
+    calculatedTax = parseFloat(customTaxAmountRaw) || 0;
+  } else {
+    if (taxType === 'pph21') {
+      calculatedTax = Math.round(grossAmount * 0.05);
+    } else if (taxType === 'pph23') {
+      calculatedTax = Math.round(grossAmount * 0.02);
+    } else if (taxType === 'ppn') {
+      calculatedTax = Math.round(grossAmount * 0.11);
+    }
+  }
+
+  // Unggah berkas ke Cloudinary
+  const uploadResult = await uploadToCloudinary(receiptFile, `sim_riset/projects/${projectId}`);
+  if ('error' in uploadResult) {
+    return { error: uploadResult.error };
+  }
+
+  const { error: dbError } = await supabase.from('expenses').insert({
+    project_id: projectId,
+    budget_item_id: budgetItemId,
+    expense_date: expenseDate,
+    description,
+    gross_amount: grossAmount,
+    tax_type: taxType,
+    tax_amount: calculatedTax,
+    receipt_cloudinary_url: uploadResult.secure_url,
+    receipt_public_id: uploadResult.public_id,
+    created_by: user.id,
+    verified_by_pi: true,
+  });
+
+  if (dbError) return { error: dbError.message };
+
+  revalidatePath(`/projects/${projectId}`);
+  revalidatePath('/expenses');
+  return { success: true };
+}
+
+// 10. Hapus Catatan Belanja
+export async function deleteExpense(expenseId: string, projectId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from('expenses').delete().eq('id', expenseId);
+  if (error) return { error: error.message };
+  revalidatePath(`/projects/${projectId}`);
+  revalidatePath('/expenses');
+  return { success: true };
+}

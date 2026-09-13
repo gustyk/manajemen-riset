@@ -8,6 +8,10 @@ import {
   submitLogbook,
   verifyLogbook,
   testTelegramPing,
+  createBudgetItem,
+  deleteBudgetItem,
+  createExpense,
+  deleteExpense,
 } from './actions';
 import { updateTelegramGroupId } from '@/app/projects/actions';
 import {
@@ -27,6 +31,10 @@ import {
   Loader2,
   AlertCircle,
   FileSpreadsheet,
+  Upload,
+  Trash2,
+  Printer,
+  PieChart,
 } from 'lucide-react';
 
 interface ProjectWorkspaceTabsProps {
@@ -61,6 +69,55 @@ export default function ProjectWorkspaceTabs({
   // State untuk form task baru
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showLogbookModal, setShowLogbookModal] = useState(false);
+
+  // State untuk Keuangan & RAB
+  const [showExpenseModal, setShowExpenseModal] = useState(false);
+  const [showBudgetModal, setShowBudgetModal] = useState(false);
+  const [budgetTab, setBudgetTab] = useState<'expenses' | 'rab'>('expenses');
+  const [expenseLoading, setExpenseLoading] = useState(false);
+  const [budgetLoading, setBudgetLoading] = useState(false);
+  const [expenseError, setExpenseError] = useState<string | null>(null);
+  const [budgetError, setBudgetError] = useState<string | null>(null);
+
+  async function handleCreateExpense(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setExpenseLoading(true);
+    setExpenseError(null);
+    const formData = new FormData(e.currentTarget);
+    formData.append('projectId', projectId);
+    try {
+      const res = await createExpense(formData);
+      if (res?.error) {
+        setExpenseError(res.error);
+      } else {
+        setShowExpenseModal(false);
+      }
+    } catch (err: any) {
+      setExpenseError(err.message || 'Gagal menyimpan realisasi belanja');
+    } finally {
+      setExpenseLoading(false);
+    }
+  }
+
+  async function handleCreateBudgetItem(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setBudgetLoading(true);
+    setBudgetError(null);
+    const formData = new FormData(e.currentTarget);
+    formData.append('projectId', projectId);
+    try {
+      const res = await createBudgetItem(formData);
+      if (res?.error) {
+        setBudgetError(res.error);
+      } else {
+        setShowBudgetModal(false);
+      }
+    } catch (err: any) {
+      setBudgetError(err.message || 'Gagal menyimpan item RAB');
+    } finally {
+      setBudgetLoading(false);
+    }
+  }
 
   // State untuk edit Chat ID Telegram
   const [chatIdInput, setChatIdInput] = useState(project.telegram_group_id?.toString() || '');
@@ -435,60 +492,241 @@ export default function ProjectWorkspaceTabs({
 
         {/* TAB 4: EXPENSES & SPJ */}
         {activeTab === 'expenses' && (
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h3 className="text-sm font-bold text-slate-900">Realisasi Anggaran & Pertanggungjawaban (SPJ)</h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Pencatatan nota kuitansi tersimpan di Cloudinary dan siap diekspor untuk audit.
-                </p>
+          <div className="space-y-6">
+            {/* Budget Progress Bar */}
+            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                <div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                    Serapan Anggaran Riset
+                  </span>
+                  <div className="flex items-baseline gap-2 mt-0.5">
+                    <span className="text-xl font-black text-slate-900">
+                      Rp {totalSpent.toLocaleString('id-ID')}
+                    </span>
+                    <span className="text-xs text-slate-500">
+                      dari total pagu Rp {Number(project.total_budget).toLocaleString('id-ID')}
+                    </span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-sm font-black text-indigo-600">
+                    {project.total_budget > 0
+                      ? Math.round((totalSpent / Number(project.total_budget)) * 100)
+                      : 0}
+                    %
+                  </span>
+                  <span className="text-xs text-slate-500 block">Terserap</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
-                  Total Serapan: Rp {totalSpent.toLocaleString('id-ID')}
-                </span>
+
+              {/* Progress Bar */}
+              <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-indigo-600 rounded-full transition-all duration-500"
+                  style={{
+                    width: `${Math.min(
+                      100,
+                      project.total_budget > 0
+                        ? Math.round((totalSpent / Number(project.total_budget)) * 100)
+                        : 0
+                    )}%`,
+                  }}
+                />
+              </div>
+
+              <div className="flex items-center justify-between text-xs text-slate-500 mt-2">
+                <span>Sisa Pagu: Rp {Math.max(0, Number(project.total_budget) - totalSpent).toLocaleString('id-ID')}</span>
+                <span>{expenses.length} Bukti Kuitansi Tersimpan di Cloudinary</span>
               </div>
             </div>
 
-            {expenses.length === 0 ? (
-              <div className="p-8 text-center border border-dashed border-slate-200 rounded-xl">
-                <Receipt className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                <p className="text-xs font-semibold text-slate-600">Belum ada kuitansi dicatat</p>
-                <p className="text-[11px] text-slate-400 mt-1">
-                  Foto nota belanja tersimpan aman di Cloudinary dengan kompresi otomatis.
-                </p>
+            {/* Sub-tab switcher & Action Buttons */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+              <div className="flex rounded-xl bg-slate-100 p-1">
+                <button
+                  type="button"
+                  onClick={() => setBudgetTab('expenses')}
+                  className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                    budgetTab === 'expenses'
+                      ? 'bg-white text-slate-900 shadow-xs'
+                      : 'text-slate-500 hover:text-slate-900'
+                  }`}
+                >
+                  Realisasi Belanja & SPJ ({expenses.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBudgetTab('rab')}
+                  className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                    budgetTab === 'rab'
+                      ? 'bg-white text-slate-900 shadow-xs'
+                      : 'text-slate-500 hover:text-slate-900'
+                  }`}
+                >
+                  Rencana Anggaran (RAB) ({budgetItems.length})
+                </button>
               </div>
-            ) : (
-              <div className="space-y-3">
-                {expenses.map((exp) => (
-                  <div
-                    key={exp.id}
-                    className="p-4 rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-4"
+
+              <div className="flex items-center gap-2">
+                {budgetTab === 'expenses' ? (
+                  <>
+                    <button
+                      onClick={() => window.print()}
+                      className="inline-flex items-center gap-1.5 px-3 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl transition-colors"
+                    >
+                      <Printer className="w-3.5 h-3.5" />
+                      <span>Cetak Format SPJ</span>
+                    </button>
+                    <button
+                      onClick={() => setShowExpenseModal(true)}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Catat Kuitansi Belanja</span>
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => setShowBudgetModal(true)}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors"
                   >
-                    <div>
-                      <h4 className="text-xs font-bold text-slate-900">{exp.description}</h4>
-                      <p className="text-[11px] text-slate-400 mt-0.5">
-                        Tanggal: {exp.expense_date} • Pajak: {exp.tax_type.toUpperCase()}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-xs font-black text-slate-900 block">
-                        Rp {Number(exp.gross_amount).toLocaleString('id-ID')}
-                      </span>
-                      {exp.receipt_cloudinary_url && (
-                        <a
-                          href={exp.receipt_cloudinary_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[11px] text-indigo-600 hover:underline inline-flex items-center gap-1"
-                        >
-                          <span>Lihat Kuitansi</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
-                    </div>
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Tambah Item RAB</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Content: Realisasi Belanja (SPJ) */}
+            {budgetTab === 'expenses' && (
+              <div>
+                {expenses.length === 0 ? (
+                  <div className="p-8 text-center border border-dashed border-slate-200 rounded-xl">
+                    <Receipt className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                    <p className="text-xs font-semibold text-slate-600">Belum ada realisasi belanja dicatat</p>
+                    <p className="text-[11px] text-slate-400 mt-1">
+                      Klik "Catat Kuitansi Belanja" untuk mengunggah bukti nota kuitansi pertama Anda.
+                    </p>
                   </div>
-                ))}
+                ) : (
+                  <div className="border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider">
+                        <tr>
+                          <th className="px-4 py-3">Tanggal</th>
+                          <th className="px-4 py-3">Uraian Belanja</th>
+                          <th className="px-4 py-3">Pajak</th>
+                          <th className="px-4 py-3 text-right">Nominal Bruto</th>
+                          <th className="px-4 py-3 text-right">Nominal Bersih</th>
+                          <th className="px-4 py-3 text-center">Bukti Nota</th>
+                          <th className="px-4 py-3 text-center">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {expenses.map((exp) => (
+                          <tr key={exp.id} className="hover:bg-slate-50/50">
+                            <td className="px-4 py-3 whitespace-nowrap text-slate-600">{exp.expense_date}</td>
+                            <td className="px-4 py-3 font-semibold text-slate-900">{exp.description}</td>
+                            <td className="px-4 py-3">
+                              <span className="px-2 py-0.5 rounded bg-slate-100 text-[10px] font-bold uppercase text-slate-700">
+                                {exp.tax_type} {exp.tax_amount > 0 && `(Rp ${Number(exp.tax_amount).toLocaleString('id-ID')})`}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-right font-semibold text-slate-800 whitespace-nowrap">
+                              Rp {Number(exp.gross_amount).toLocaleString('id-ID')}
+                            </td>
+                            <td className="px-4 py-3 text-right font-bold text-indigo-700 whitespace-nowrap">
+                              Rp {Number(exp.net_amount || exp.gross_amount).toLocaleString('id-ID')}
+                            </td>
+                            <td className="px-4 py-3 text-center whitespace-nowrap">
+                              {exp.receipt_cloudinary_url ? (
+                                <a
+                                  href={exp.receipt_cloudinary_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:underline"
+                                >
+                                  <span>Lihat Nota</span>
+                                  <ExternalLink className="w-3 h-3" />
+                                </a>
+                              ) : (
+                                <span className="text-slate-400">-</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-center whitespace-nowrap">
+                              <button
+                                onClick={() => deleteExpense(exp.id, projectId)}
+                                className="p-1 text-slate-400 hover:text-red-600 transition-colors"
+                                title="Hapus Kuitansi"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Content: Rencana Anggaran Biaya (RAB) */}
+            {budgetTab === 'rab' && (
+              <div>
+                {budgetItems.length === 0 ? (
+                  <div className="p-8 text-center border border-dashed border-slate-200 rounded-xl">
+                    <PieChart className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                    <p className="text-xs font-semibold text-slate-600">Belum ada item RAB dirancang</p>
+                    <p className="text-[11px] text-slate-400 mt-1">
+                      Rinci rencana pengeluaran berdasarkan standar biaya masukan (SBM) untuk memudahkan SPJ.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider">
+                        <tr>
+                          <th className="px-4 py-3">Kategori SBM</th>
+                          <th className="px-4 py-3">Uraian Komponen</th>
+                          <th className="px-4 py-3 text-right">Harga Satuan</th>
+                          <th className="px-4 py-3 text-center">Volume</th>
+                          <th className="px-4 py-3 text-right">Total Anggaran</th>
+                          <th className="px-4 py-3 text-center">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {budgetItems.map((item) => (
+                          <tr key={item.id} className="hover:bg-slate-50/50">
+                            <td className="px-4 py-3 whitespace-nowrap">
+                              <span className="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase">
+                                {item.category.replace(/_/g, ' ')}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 font-semibold text-slate-900">{item.description}</td>
+                            <td className="px-4 py-3 text-right text-slate-700 whitespace-nowrap">
+                              Rp {Number(item.unit_price).toLocaleString('id-ID')}
+                            </td>
+                            <td className="px-4 py-3 text-center font-bold text-slate-800">{item.quantity}</td>
+                            <td className="px-4 py-3 text-right font-black text-slate-900 whitespace-nowrap">
+                              Rp {Number(item.total_planned || item.unit_price * item.quantity).toLocaleString('id-ID')}
+                            </td>
+                            <td className="px-4 py-3 text-center whitespace-nowrap">
+                              <button
+                                onClick={() => deleteBudgetItem(item.id, projectId)}
+                                className="p-1 text-slate-400 hover:text-red-600 transition-colors"
+                                title="Hapus Item RAB"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -795,6 +1033,213 @@ export default function ProjectWorkspaceTabs({
                   className="px-4 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg"
                 >
                   Kirim Logbook
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Catat Realisasi Belanja & Kuitansi Cloudinary */}
+      {showExpenseModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-sm font-bold text-slate-900 mb-1">Catat Realisasi Belanja & Unggah Kuitansi</h3>
+            <p className="text-xs text-slate-500 mb-4">
+              Bukti foto nota/struk akan diunggah dan dikompresi otomatis ke Cloudinary.
+            </p>
+
+            {expenseError && (
+              <div className="mb-4 p-3 rounded-xl bg-red-50 text-xs text-red-700">
+                {expenseError}
+              </div>
+            )}
+
+            <form onSubmit={handleCreateExpense} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Tanggal Belanja</label>
+                <input
+                  name="expenseDate"
+                  type="date"
+                  required
+                  defaultValue={new Date().toISOString().split('T')[0]}
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Kategori RAB Terkait (Opsional)</label>
+                <select
+                  name="budgetItemId"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white"
+                >
+                  <option value="">-- Tanpa Rujukan RAB --</option>
+                  {budgetItems.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      [{item.category.replace(/_/g, ' ')}] {item.description}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Uraian / Deskripsi Belanja</label>
+                <input
+                  name="description"
+                  required
+                  placeholder="Contoh: Pembelian SSD NVMe untuk Server Pengujian Model"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Nominal Bruto (Rp)</label>
+                  <input
+                    name="grossAmount"
+                    type="number"
+                    required
+                    min={1000}
+                    step={1000}
+                    placeholder="1500000"
+                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Jenis Pajak</label>
+                  <select
+                    name="taxType"
+                    defaultValue="none"
+                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white"
+                  >
+                    <option value="none">Tanpa Pajak</option>
+                    <option value="pph21">PPh 21 (Honor/Narasumber ~5%)</option>
+                    <option value="pph23">PPh 23 (Sewa/Jasa ~2%)</option>
+                    <option value="ppn">PPN (11%)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Unggah Bukti Kuitansi / Nota (Foto / PDF) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="receiptFile"
+                  type="file"
+                  required
+                  accept="image/*,application/pdf"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-slate-50 file:mr-3 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowExpenseModal(false)}
+                  className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={expenseLoading}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs disabled:opacity-50"
+                >
+                  {expenseLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  <span>Simpan & Upload Cloudinary</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Tambah Item RAB */}
+      {showBudgetModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-100">
+            <h3 className="text-sm font-bold text-slate-900 mb-1">Rancang Rencana Anggaran (RAB)</h3>
+            <p className="text-xs text-slate-500 mb-4">
+              Tambahkan pos belanja berdasarkan Standar Biaya Masukan (SBM).
+            </p>
+
+            {budgetError && (
+              <div className="mb-4 p-3 rounded-xl bg-red-50 text-xs text-red-700">
+                {budgetError}
+              </div>
+            )}
+
+            <form onSubmit={handleCreateBudgetItem} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Kategori Belanja SBM</label>
+                <select
+                  name="category"
+                  defaultValue="bahan_habis_pakai"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white capitalize"
+                >
+                  <option value="bahan_habis_pakai">Bahan Habis Pakai</option>
+                  <option value="sewa_alat">Sewa Peralatan / Server Cloud</option>
+                  <option value="perjalanan">Perjalanan Dinas / Survei Lapangan</option>
+                  <option value="honorarium">Honorarium Pelaksana / Asisten Riset</option>
+                  <option value="luaran_publikasi">Biaya Luaran & Publikasi Scopus/HKI</option>
+                  <option value="lainnya">Lain-lain</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Uraian Komponen</label>
+                <input
+                  name="description"
+                  required
+                  placeholder="Contoh: Langganan Google Cloud Platform GPU 3 Bulan"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Biaya Satuan (Rp)</label>
+                  <input
+                    name="unitPrice"
+                    type="number"
+                    required
+                    min={1000}
+                    step={1000}
+                    placeholder="2500000"
+                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Volume / Kuantitas</label>
+                  <input
+                    name="quantity"
+                    type="number"
+                    required
+                    defaultValue={1}
+                    min={1}
+                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowBudgetModal(false)}
+                  className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={budgetLoading}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs disabled:opacity-50"
+                >
+                  {budgetLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  <span>Simpan Item RAB</span>
                 </button>
               </div>
             </form>
