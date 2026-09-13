@@ -78,11 +78,48 @@ SELECT cron.schedule(
 
 ---
 
-## 4. Struktur Fitur Lengkap yang Telah Siap Digunakan
+## 4. Langkah 4: Kebijakan Row Level Security (RLS) di Supabase
 
-- [x] **Autentikasi:** Login / Registrasi dosen dan mahasiswa asisten peneliti.
+### Apakah Perlu Dijalankan Secara Manual?
+- **Untuk Berjalannya Aplikasi Web:** **TIDAK WAJIB**. Server Next.js SIM-Riset telah dilengkapi lapisan otentikasi ketat di sisi server (*Server-Side Authorization*) menggunakan `createAdminClient()` yang memvalidasi sesi login user sebelum mengembalikan data sesuai hak akses masing-masing role.
+- **Untuk Perlindungan Berlapis (*Defense-in-Depth*):** **SANGAT DIANJURKAN**. Menjalankan skrip ini memastikan bahwa jika ada pihak yang mencoba mengakses tabel langsung melalui REST API client publik Supabase (*anon key*), PostgreSQL akan menolak akses yang tidak sah.
+
+### Cara Menjalankan:
+1. Buka Supabase Dashboard $\rightarrow$ **SQL Editor**.
+2. Buka file [`supabase/migrations/20260913_complete_rls_policies.sql`](file:///mnt/d/Apps/roadmap-riset/supabase/migrations/20260913_complete_rls_policies.sql).
+3. Salin seluruh kodenya dan klik **Run**.
+
+---
+
+## 5. Akun Dummy untuk Pengujian Demo & Pemulihan Data (*Seed*)
+
+Platform telah menyediakan 5 akun dummy yang mencakup seluruh role di sistem:
+
+> **Password Bersama untuk Semua Akun Dummy:** `DemoPassword2026!`
+
+| Peran (Role) | Email Login | Password | Nama Lengkap & NIDN/NIM | Deskripsi Hak Akses |
+| :--- | :--- | :--- | :--- | :--- |
+| **Principal Investigator (PI)** | `pi.demo@simriset.ac.id` | `DemoPassword2026!` | **Prof. Dr. Ir. Wahyu Hidayat, M.Kom.**<br>NIDN: `0015087501` | Kendali penuh riset, RAB, validasi logbook, undang tim |
+| **Co-PI (Dosen Anggota)** | `copi.demo@simriset.ac.id` | `DemoPassword2026!` | **Dr. Rina Anggraini, S.Kom., M.T.**<br>NIDN: `0712058801` | Kelola WBS tugas, pantau pengeluaran, reviu logbook |
+| **Student RA (Mahasiswa)** | `student.demo@simriset.ac.id` | `DemoPassword2026!` | **Bagas Pratama Putra**<br>NIM: `202102001` | Kerjakan tugas Kanban, catat logbook, cetak portofolio MBKM |
+| **Mitra Industri (Partner)** | `partner.demo@simriset.ac.id` | `DemoPassword2026!` | **Ir. Hendra Wijaya**<br>ID: `MITRA-IND-01` | Pantau prototipe, HKI, kontribusi pendanaan/in-kind |
+| **Auditor LPPM (Reviewer)** | `auditor.demo@simriset.ac.id` | `DemoPassword2026!` | **Dra. Sri Wahyuni, M.Ak., Ak., CA**<br>NIP: `197508142000032001` | Audit SPJ, cek bukti nota Cloudinary, verifikasi pajak |
+
+### Perintah Restore / Reset Database:
+Jika sewaktu-waktu database di-reset, Anda dapat memulihkan seluruh akun dummy dan data proyek contoh secara otomatis dengan menjalankan:
+
+```bash
+npm run db:seed
+```
+
+---
+
+## 6. Struktur Fitur Lengkap yang Telah Siap Digunakan
+
+- [x] **Autentikasi & RBAC:** Login / Registrasi 5 role (PI, Co-PI, Student RA, Partner, Auditor).
 - [x] **Manajemen Proyek:** Pemetaan proposal, skema (BIMA, BRIN, Kedaireka, Mandiri), dan anggota tim.
-- [x] **Task & WBS:** Kanban board dan pembagian tugas per anggota.
+- [x] **Undang & Kelola Tim:** Modal interaktif untuk menambah/menghapus anggota tim per role.
+- [x] **Task & WBS:** Kanban board dan pembagian tugas per anggota dengan level prioritas.
 - [x] **Logbook Mahasiswa:** Pencatatan durasi jam, link commit git, dan persetujuan dosen pembimbing.
 - [x] **Keuangan & SPJ:** Rencana Anggaran (RAB), pencatatan nota riil, upload Cloudinary, dan cetak SPJ format audit.
 - [x] **Konversi MBKM/Skripsi:** Cetak lembar portofolio dan rekam jejak kontribusi mahasiswa untuk rekognisi nilai.
@@ -91,3 +128,4 @@ SELECT cron.schedule(
   - Perintah bot: `/status`, `/mytasks`, `/pending_logbook`, `/help`.
   - Uji coba instan via tombol *"Kirim Test Ping"* di workspace proyek.
 - [x] **Pelacakan Luaran Riset:** Pipeline publikasi Scopus/Sinta dan pendaftaran sertifikat HKI.
+- [x] **Seeding Terotomasi:** Perintah `npm run db:seed` untuk pemulihan instan setelah reset database.

@@ -162,12 +162,32 @@ async function seed() {
   const projRes = await fetch(`${SUPABASE_URL}/rest/v1/projects?select=*&limit=1`, { headers });
   const projects = await projRes.json();
 
-  if (!projects || projects.length === 0) {
-    console.log('Tidak ada project ditemukan di database.');
-    return;
+  let project = projects && projects.length > 0 ? projects[0] : null;
+
+  if (!project) {
+    console.log('\n[PROJECT] Belum ada proyek di database. Membuat proyek demo default...');
+    const piId = userMap['pi.demo@simriset.ac.id'] || existingUsers[0]?.id;
+    const createProjRes = await fetch(`${SUPABASE_URL}/rest/v1/projects`, {
+      method: 'POST',
+      headers: { ...headers, 'Prefer': 'return=representation' },
+      body: JSON.stringify({
+        title: 'Pengembangan Model Autonomous Multi-Agent untuk Manajemen Portofolio Riset Perguruan Tinggi',
+        focus_area: 'Sistem Cerdas & Rekayasa Perangkat Lunak',
+        scheme: 'kemdikbud_bima',
+        fiscal_year: 2026,
+        start_date: '2026-03-01',
+        end_date: '2026-11-30',
+        total_budget: 45000000,
+        status: 'funded',
+        telegram_group_id: -5273760348,
+        created_by: piId
+      })
+    });
+    const createdProjs = await createProjRes.json();
+    project = createdProjs[0];
+    console.log(`  -> Proyek demo berhasil dibuat (ID: ${project.id})`);
   }
 
-  const project = projects[0];
   console.log(`\n=== MENGAITKAN ROLE KE PROYEK DEMO: "${project.title}" (ID: ${project.id}) ===\n`);
 
   // Pastikan creator project juga tercatat sebagai 'pi'
@@ -476,6 +496,29 @@ async function seed() {
       });
       console.log(`[PARTNER] Mitra industri "${partnerData[0].name}" berhasil didaftarkan.`);
     }
+  }
+
+  // Cek Aturan Pengingat Telegram
+  const ruleRes = await fetch(`${SUPABASE_URL}/rest/v1/notification_rules?project_id=eq.${project.id}`, { headers });
+  const rules = await ruleRes.json();
+  if (rules.length === 0) {
+    console.log('\n=== SEEDING ATURAN PENGINGAT TELEGRAM ===');
+    const demoRules = [
+      { project_id: project.id, event_type: 'interim_report', trigger_offset_days: -14, dispatch_time: '08:00:00', target_channel: 'both' },
+      { project_id: project.id, event_type: 'interim_report', trigger_offset_days: -7, dispatch_time: '08:00:00', target_channel: 'both' },
+      { project_id: project.id, event_type: 'final_report', trigger_offset_days: -7, dispatch_time: '08:00:00', target_channel: 'both' },
+      { project_id: project.id, event_type: 'final_report', trigger_offset_days: -1, dispatch_time: '08:00:00', target_channel: 'both' },
+      { project_id: project.id, event_type: 'spj_deadline', trigger_offset_days: -3, dispatch_time: '08:00:00', target_channel: 'both' },
+      { project_id: project.id, event_type: 'journal_revision', trigger_offset_days: -3, dispatch_time: '08:00:00', target_channel: 'both' }
+    ];
+    for (const r of demoRules) {
+      await fetch(`${SUPABASE_URL}/rest/v1/notification_rules`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(r)
+      });
+    }
+    console.log(`[RULES] ${demoRules.length} aturan pengingat otomatis berhasil dipasang.`);
   }
 
   console.log('\n=== SEEDING SELESAI DENGAN SUKSES! ===');
