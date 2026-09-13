@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { sendTelegramMessage } from '@/lib/telegram/bot';
 
 // 1. Tambah Tugas / Task WBS
@@ -129,18 +130,67 @@ export async function verifyLogbook(
   return { success: true };
 }
 
-// 5. Tambah Anggota Tim (Co-PI / Mahasiswa RA)
+// 5. Tambah Anggota Tim (Co-PI / Mahasiswa RA / Partner / Auditor)
 export async function addProjectMember(formData: FormData) {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: 'Harus login terlebih dahulu.' };
+
   const projectId = formData.get('projectId') as string;
-  const email = formData.get('email') as string;
+  const email = (formData.get('email') as string)?.trim().toLowerCase();
   const role = formData.get('role') as string;
 
   if (!email || !role) return { error: 'Email dan peran wajib diisi.' };
 
-  // Cari user berdasarkan email di profiles
-  // Note: profiles table has user IDs, we can look up by email from auth.users or profiles
-  // Jika email belum terdaftar di profiles, buat catatan
+  const admin = createAdminClient();
+
+  // Cari user berdasarkan email dari Auth
+  const { data: userList } = await admin.auth.admin.listUsers();
+  const targetUser = userList?.users?.find((u) => u.email?.toLowerCase() === email);
+
+  if (!targetUser) {
+    return {
+      error: `Pengguna dengan email "${email}" belum terdaftar. Pastikan akun telah dibuat.`,
+    };
+  }
+
+  // Masukkan atau update ke project_members
+  const { error: insertError } = await admin
+    .from('project_members')
+    .upsert(
+      {
+        project_id: projectId,
+        user_id: targetUser.id,
+        role: role as any,
+      },
+      { onConflict: 'project_id,user_id' }
+    );
+
+  if (insertError) {
+    return { error: insertError.message };
+  }
+
+  revalidatePath(`/projects/${projectId}`);
+  return { success: true };
+}
+
+// 5b. Hapus Anggota Tim
+export async function removeProjectMember(memberId: string, projectId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: 'Harus login terlebih dahulu.' };
+
+  const admin = createAdminClient();
+  const { error } = await admin.from('project_members').delete().eq('id', memberId);
+
+  if (error) return { error: error.message };
+  revalidatePath(`/projects/${projectId}`);
   return { success: true };
 }
 

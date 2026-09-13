@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import ProjectWorkspaceTabs from './ProjectWorkspaceTabs';
 import {
@@ -33,8 +34,14 @@ export default async function ProjectDetailPage({
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) {
+    redirect('/login');
+  }
+
+  const admin = createAdminClient();
+
   // 1. Ambil data proyek
-  const { data: project, error: projectError } = await supabase
+  const { data: project, error: projectError } = await admin
     .from('projects')
     .select('*, created_by_profile:created_by(*)')
     .eq('id', id)
@@ -45,60 +52,69 @@ export default async function ProjectDetailPage({
   }
 
   // 2. Ambil profil user saat ini
-  const { data: currentProfile } = await supabase
+  const { data: currentProfile } = await admin
     .from('profiles')
     .select('*')
-    .eq('id', user?.id)
+    .eq('id', user.id)
     .maybeSingle();
 
   // 3. Ambil anggota tim
-  const { data: members } = await supabase
+  const { data: members } = await admin
     .from('project_members')
     .select('*, profile:user_id(*)')
     .eq('project_id', id);
 
+  // Periksa hak akses dan peran pengguna
+  const currentMember = members?.find((m) => m.user_id === user.id);
+  const isCreator = project.created_by === user.id;
+  const isAuditor = currentMember?.role === 'auditor' || user.email?.includes('auditor');
+
+  if (!isCreator && !currentMember && !isAuditor) {
+    notFound();
+  }
+
+  const userRole = currentMember?.role || (isCreator ? 'pi' : isAuditor ? 'auditor' : 'student_ra');
+  const isPI = userRole === 'pi' || isCreator;
+
   // 4. Ambil tugas / tasks
-  const { data: tasks } = await supabase
+  const { data: tasks } = await admin
     .from('tasks')
     .select('*, assigned_profile:assigned_to(*)')
     .eq('project_id', id)
     .order('created_at', { ascending: false });
 
   // 5. Ambil logbooks
-  const { data: logbooks } = await supabase
+  const { data: logbooks } = await admin
     .from('logbooks')
     .select('*, student_profile:user_id(*)')
     .eq('project_id', id)
     .order('activity_date', { ascending: false });
 
   // 6. Ambil anggaran & expenses
-  const { data: budgetItems } = await supabase
+  const { data: budgetItems } = await admin
     .from('budget_items')
     .select('*')
     .eq('project_id', id);
 
-  const { data: expenses } = await supabase
+  const { data: expenses } = await admin
     .from('expenses')
     .select('*')
     .eq('project_id', id)
     .order('expense_date', { ascending: false });
 
   // 7. Ambil aturan notifikasi
-  const { data: notificationRules } = await supabase
+  const { data: notificationRules } = await admin
     .from('notification_rules')
     .select('*')
     .eq('project_id', id)
     .order('trigger_offset_days', { ascending: true });
 
   // 8. Ambil luaran riset & publikasi
-  const { data: outputs } = await supabase
+  const { data: outputs } = await admin
     .from('research_outputs')
     .select('*')
     .eq('project_id', id)
     .order('created_at', { ascending: false });
-
-  // Periksa apakah user ini adalah PI atau Dosen
-  const isPI = project.created_by === user?.id;
 
   const schemeLabels: Record<string, string> = {
     kemdikbud_bima: 'Hibah Kemdikbudristek (BIMA)',
@@ -192,6 +208,8 @@ export default async function ProjectDetailPage({
         projectId={id}
         currentTab={tab}
         isPI={isPI}
+        userRole={userRole}
+        currentUserId={user.id}
         project={project}
         members={members || []}
         tasks={tasks || []}

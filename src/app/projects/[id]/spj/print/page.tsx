@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import PrintButton from './PrintButton';
 
 export const dynamic = 'force-dynamic';
@@ -20,8 +21,10 @@ export default async function SpjPrintPage({
     redirect('/login');
   }
 
+  const admin = createAdminClient();
+
   // 1. Ambil data proyek
-  const { data: project, error: projectError } = await supabase
+  const { data: project, error: projectError } = await admin
     .from('projects')
     .select('*, created_by_profile:created_by(*)')
     .eq('id', id)
@@ -32,7 +35,7 @@ export default async function SpjPrintPage({
   }
 
   // 2. Ambil seluruh belanja proyek ini
-  const { data: expenses } = await supabase
+  const { data: expenses } = await admin
     .from('expenses')
     .select('*, budget_item:budget_item_id(*)')
     .eq('project_id', id)

@@ -18,6 +18,8 @@ import {
   createResearchOutput,
   deleteResearchOutput,
   updateResearchOutputStatus,
+  addProjectMember,
+  removeProjectMember,
 } from './actions';
 import { updateTelegramGroupId } from '@/app/projects/actions';
 import {
@@ -49,6 +51,8 @@ interface ProjectWorkspaceTabsProps {
   projectId: string;
   currentTab: string;
   isPI: boolean;
+  userRole?: string;
+  currentUserId?: string;
   project: any;
   members: any[];
   tasks: any[];
@@ -63,6 +67,8 @@ export default function ProjectWorkspaceTabs({
   projectId,
   currentTab,
   isPI,
+  userRole = 'pi',
+  currentUserId,
   project,
   members,
   tasks,
@@ -79,6 +85,11 @@ export default function ProjectWorkspaceTabs({
   // State untuk form task baru
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [showLogbookModal, setShowLogbookModal] = useState(false);
+
+  // State untuk Anggota Tim
+  const [showMemberModal, setShowMemberModal] = useState(false);
+  const [memberLoading, setMemberLoading] = useState(false);
+  const [memberError, setMemberError] = useState<string | null>(null);
 
   // State untuk Keuangan & RAB
   const [showExpenseModal, setShowExpenseModal] = useState(false);
@@ -241,6 +252,72 @@ export default function ProjectWorkspaceTabs({
     }
   }
 
+  async function handleAddMember(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setMemberLoading(true);
+    setMemberError(null);
+    const formData = new FormData(e.currentTarget);
+    formData.append('projectId', projectId);
+    try {
+      const res = await addProjectMember(formData);
+      if (res?.error) {
+        setMemberError(res.error);
+      } else {
+        setShowMemberModal(false);
+      }
+    } catch (err: any) {
+      setMemberError(err.message || 'Gagal menambahkan anggota');
+    } finally {
+      setMemberLoading(false);
+    }
+  }
+
+  async function handleRemoveMember(memberId: string) {
+    if (!confirm('Apakah Anda yakin ingin menghapus anggota tim ini?')) return;
+    try {
+      const res = await removeProjectMember(memberId, projectId);
+      if (res?.error) {
+        alert(res.error);
+      }
+    } catch (err: any) {
+      alert(err.message || 'Gagal menghapus anggota');
+    }
+  }
+
+  const getRoleBadgeStyle = (role: string) => {
+    switch (role) {
+      case 'pi':
+        return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'co_pi':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'student_ra':
+        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      case 'partner':
+        return 'bg-amber-100 text-amber-800 border-amber-200';
+      case 'auditor':
+        return 'bg-rose-100 text-rose-800 border-rose-200';
+      default:
+        return 'bg-slate-100 text-slate-700 border-slate-200';
+    }
+  };
+
+  const getRoleLabel = (role: string) => {
+    switch (role) {
+      case 'pi':
+        return 'Ketua Peneliti (PI)';
+      case 'co_pi':
+        return 'Dosen Anggota (Co-PI)';
+      case 'student_ra':
+        return 'Mahasiswa RA / MBKM';
+      case 'partner':
+        return 'Mitra Industri / Partner';
+      case 'auditor':
+        return 'Auditor LPPM / Reviewer';
+      default:
+        return role;
+    }
+  };
+
   const tabs = [
     { id: 'overview', label: 'Ringkasan & Tim', icon: LayoutDashboard },
     { id: 'tasks', label: `Tugas & WBS (${tasks.length})`, icon: CheckSquare },
@@ -278,6 +355,32 @@ export default function ProjectWorkspaceTabs({
 
       {/* Tab Content */}
       <div className="bg-white rounded-b-2xl border-x border-b border-slate-200 p-6 shadow-xs">
+        {/* Active Role Indicator */}
+        <div className="mb-6 px-4 py-3 rounded-xl bg-slate-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold text-xs border border-indigo-500/30 shrink-0">
+              <ShieldCheck className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-[11px] text-slate-400 font-medium">Sesi Login Aktif / Peran Akses:</p>
+              <h4 className="text-xs font-bold text-white tracking-wide">
+                {getRoleLabel(userRole)}
+              </h4>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className={`px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider rounded-md border ${
+              userRole === 'pi' ? 'bg-purple-900/60 text-purple-300 border-purple-600' :
+              userRole === 'co_pi' ? 'bg-blue-900/60 text-blue-300 border-blue-600' :
+              userRole === 'student_ra' ? 'bg-emerald-900/60 text-emerald-300 border-emerald-600' :
+              userRole === 'auditor' ? 'bg-rose-900/60 text-rose-300 border-rose-600' :
+              'bg-amber-900/60 text-amber-300 border-amber-600'
+            }`}>
+              Role: {userRole.toUpperCase()}
+            </span>
+          </div>
+        </div>
+
         {/* TAB 1: OVERVIEW */}
         {activeTab === 'overview' && (
           <div className="space-y-8">
@@ -289,9 +392,20 @@ export default function ProjectWorkspaceTabs({
                     <ShieldCheck className="w-4 h-4 text-indigo-600" />
                     <span>Susunan Tim Peneliti & Mahasiswa</span>
                   </h3>
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                    {members.length} Anggota
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                      {members.length} Anggota
+                    </span>
+                    {isPI && (
+                      <button
+                        onClick={() => setShowMemberModal(true)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>Tambah Anggota</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-3">
@@ -305,11 +419,11 @@ export default function ProjectWorkspaceTabs({
                           {m.profile?.full_name || 'Anggota Riset'}
                         </p>
                         <p className="text-[11px] text-slate-500">
-                          NIDN/NIM: {m.profile?.nidn_nim || '-'}
+                          {m.profile?.nidn_nim ? `NIDN/NIM: ${m.profile.nidn_nim}` : m.profile?.institution || '-'}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${getRoleBadgeStyle(m.role)}`}>
                           {m.role.replace(/_/g, ' ')}
                         </span>
                         {m.role === 'student_ra' && (
@@ -322,6 +436,15 @@ export default function ProjectWorkspaceTabs({
                             <span>Portofolio</span>
                             <ExternalLink className="w-3 h-3" />
                           </Link>
+                        )}
+                        {isPI && m.user_id !== currentUserId && (
+                          <button
+                            onClick={() => handleRemoveMember(m.id)}
+                            className="p-1 text-slate-400 hover:text-rose-600 rounded transition-colors"
+                            title="Hapus Anggota dari Proyek"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         )}
                       </div>
                     </div>
@@ -1662,6 +1785,85 @@ export default function ProjectWorkspaceTabs({
                 >
                   {ruleLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>Pasang Aturan</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL TAMBAH ANGGOTA TIM */}
+      {showMemberModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                <span>Tambah Anggota ke Proyek Riset</span>
+              </h3>
+              <button
+                onClick={() => setShowMemberModal(false)}
+                className="text-slate-400 hover:text-slate-600 text-xs font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            {memberError && (
+              <div className="mb-4 p-3 rounded-lg bg-rose-50 text-rose-700 text-xs flex items-center gap-2 border border-rose-200">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{memberError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleAddMember} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Email Pengguna Terdaftar *
+                </label>
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="contoh: student.demo@simriset.ac.id"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                />
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Pengguna harus sudah terdaftar di sistem SIM-Riset.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Peran dalam Proyek (Role) *
+                </label>
+                <select
+                  name="role"
+                  defaultValue="student_ra"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="co_pi">Co-PI (Dosen Anggota Peneliti)</option>
+                  <option value="student_ra">Student RA (Mahasiswa Asisten Peneliti / MBKM)</option>
+                  <option value="partner">Partner (PIC Mitra Industri / Eksternal)</option>
+                  <option value="auditor">Auditor (Reviewer Internal LPPM / Verifikator SPJ)</option>
+                </select>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowMemberModal(false)}
+                  className="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  disabled={memberLoading}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs disabled:opacity-50"
+                >
+                  {memberLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  <span>Tambahkan ke Tim</span>
                 </button>
               </div>
             </form>

@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import PrintButton from '@/app/projects/[id]/spj/print/PrintButton';
 
 export const dynamic = 'force-dynamic';
@@ -20,8 +21,10 @@ export default async function StudentPortfolioPage({
     redirect('/login');
   }
 
+  const admin = createAdminClient();
+
   // 1. Ambil data proyek
-  const { data: project } = await supabase
+  const { data: project } = await admin
     .from('projects')
     .select('*, created_by_profile:created_by(*)')
     .eq('id', id)
@@ -30,7 +33,7 @@ export default async function StudentPortfolioPage({
   if (!project) notFound();
 
   // 2. Ambil profil mahasiswa
-  const { data: student } = await supabase
+  const { data: student } = await admin
     .from('profiles')
     .select('*')
     .eq('id', userId)
@@ -39,7 +42,7 @@ export default async function StudentPortfolioPage({
   if (!student) notFound();
 
   // 3. Ambil seluruh logbook mahasiswa di proyek ini
-  const { data: logbooks } = await supabase
+  const { data: logbooks } = await admin
     .from('logbooks')
     .select('*')
     .eq('project_id', id)
@@ -47,7 +50,7 @@ export default async function StudentPortfolioPage({
     .order('activity_date', { ascending: true });
 
   // 4. Ambil tugas yang ditugaskan ke mahasiswa ini
-  const { data: tasks } = await supabase
+  const { data: tasks } = await admin
     .from('tasks')
     .select('*')
     .eq('project_id', id)

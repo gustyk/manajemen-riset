@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import {
   FolderPlus,
@@ -23,18 +25,42 @@ export default async function ProjectsPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) {
+    redirect('/login');
+  }
+
+  const admin = createAdminClient();
+
   // Ambil profil pengguna
-  const { data: profile } = await supabase
+  const { data: profile } = await admin
     .from('profiles')
     .select('*')
-    .eq('id', user?.id)
+    .eq('id', user.id)
     .maybeSingle();
 
-  // Ambil daftar proyek
-  const { data: projects, error } = await supabase
+  // Ambil data keanggotaan proyek user
+  const { data: memberships } = await admin
+    .from('project_members')
+    .select('project_id, role')
+    .eq('user_id', user.id);
+
+  const memberProjectIds = memberships?.map((m) => m.project_id) || [];
+  const isAuditor = memberships?.some((m) => m.role === 'auditor') || user.email?.includes('auditor');
+
+  let query = admin
     .from('projects')
-    .select('*, project_members(*)')
-    .order('created_at', { ascending: false });
+    .select('*, project_members(*, profile:user_id(*))');
+
+  // Jika bukan auditor, batasi proyek milik sendiri atau di mana user menjadi anggota
+  if (!isAuditor) {
+    if (memberProjectIds.length > 0) {
+      query = query.or(`created_by.eq.${user.id},id.in.(${memberProjectIds.join(',')})`);
+    } else {
+      query = query.eq('created_by', user.id);
+    }
+  }
+
+  const { data: projects } = await query.order('created_at', { ascending: false });
 
   // Ambil statistik sederhana
   const totalProjects = projects?.length || 0;
